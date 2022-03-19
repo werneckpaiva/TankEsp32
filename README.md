@@ -1,2 +1,3 @@
-# esp32_tank
-Event-Driven tank robot controlled by an esp32
+# TankEsp32
+
+## Event-Driven tank robot controlled by an esp32
