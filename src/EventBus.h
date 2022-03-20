@@ -8,7 +8,7 @@
 
 class EventBase{
   public:
-    virtual uint16_t getEventTypeId();
+    virtual int eventType();
 };
 
 /**
@@ -16,19 +16,57 @@ class EventBase{
  * 
  */
 class EventListener{
-  public: virtual void receiveEvent(EventBase *event);
+  private:
+    static void listenerTask(void *params);
+  public:
+    QueueHandle_t eventQueue;
+    EventListener();
+    virtual void receiveEvent(EventBase *event){};
 };
 
-/**
- * @brief Routes the mesages in the messagebus to the right listeners
- * 
- */
-class EventDispatcher{
-    private:
-        QueueHandle_t *queue;
-        static void dispatcherTask(void *params);
-    public:
-        EventDispatcher(QueueHandle_t *queue);
+EventListener::EventListener(){
+    this->eventQueue = xQueueCreate(4, sizeof(EventBase*));
+    xTaskCreatePinnedToCore(EventListener::listenerTask,
+                "EventListener",
+                2 * 1024,
+                (void *) this,
+                1,
+                NULL,
+                1);
+}
+
+void EventListener::listenerTask(void *params){
+    EventListener *self = (EventListener *) params;
+    EventBase *event;
+    for(;;){
+        if(xQueueReceive(
+            self->eventQueue,
+            &event,
+            (300000 / portTICK_PERIOD_MS)) == pdPASS){
+
+            self->receiveEvent(event);
+        }
+    }
+}
+
+class ListenerNode{
+  private:
+    EventListener *listener;
+    ListenerNode *next;
+  public:
+
+    ListenerNode(EventListener *listener, ListenerNode *current = NULL) {
+      this->listener = listener;
+      this->next = current;
+    }
+
+    EventListener* getListener(){
+      return this->listener;
+    }
+
+    ListenerNode* getNext(){
+      return this->next;
+    }
 };
 
 /**
@@ -37,25 +75,33 @@ class EventDispatcher{
  */
 class EventBus{
     private:
-        static EventDispatcher *dispatcher;
         static QueueHandle_t queue;
+        static ListenerNode *rootListenerList;
+        static void dispatcherTask(void *params);
 
     public:
         static void init(byte queueSize);
-        static void addEventListener(uint16_t eventTypeId, EventListener *eventListener);
+        static void addEventListener(EventListener *listener);
         static void dispatchEvent(EventBase *event);
 };
 
 QueueHandle_t EventBus::queue;
-EventDispatcher *EventBus::dispatcher;
+ListenerNode *EventBus::rootListenerList;
 
 void EventBus::init(byte queueSize){
     EventBus::queue = xQueueCreate(queueSize, sizeof(EventBase*));
-    EventBus::dispatcher = new EventDispatcher(&EventBus::queue);
+    xTaskCreatePinnedToCore(EventBus::dispatcherTask,
+                "Dispatcher",
+                2 * 1024,
+                NULL,
+                1,
+                NULL,
+                0);
 };
 
-void EventBus::addEventListener(uint16_t eventTypeId, EventListener *eventListener){
-
+void EventBus::addEventListener(EventListener *listener){
+    ListenerNode *current = EventBus::rootListenerList;
+    EventBus::rootListenerList = new ListenerNode(listener, current);
 }
 
 void EventBus::dispatchEvent(EventBase *event){
@@ -64,27 +110,28 @@ void EventBus::dispatchEvent(EventBase *event){
     }
 }
 
-
-EventDispatcher::EventDispatcher(QueueHandle_t *queue){
-    this->queue = queue;
-    xTaskCreate(EventDispatcher::dispatcherTask,
-                "dispatcher",
-                2 * 1024,
-                (void *) this,
-                1,
-                NULL);
-}
-
-void EventDispatcher::dispatcherTask(void *params){
-    EventDispatcher *self = (EventDispatcher*) params;
+void EventBus::dispatcherTask(void *params){
     for(;;){
         EventBase *event;
         BaseType_t hasMessage = xQueueReceive(
-            *self->queue,
+            EventBus::queue,
             &event,
-            (1000 * 60 * 5 / portTICK_PERIOD_MS));
+            (300000 / portTICK_PERIOD_MS));
         if(hasMessage == pdPASS){
-            Serial.printf("Message received type: %d\n", event->getEventTypeId());
+            Serial.printf("Dispatcher: message received type: %d\n", event->eventType());
+            ListenerNode *currentListenerNode = EventBus::rootListenerList;
+            while(currentListenerNode != NULL){
+                if (xQueueSend(
+                        currentListenerNode->getListener()->eventQueue,
+                        (void *) &event,
+                        10 / portTICK_PERIOD_MS) != pdPASS){
+                    Serial.println("Listener Queue full!");
+                }
+                
+                currentListenerNode = currentListenerNode->getNext();
+            }
+            Serial.println("deleting");
+            delete(event);
         }
     }
 }
