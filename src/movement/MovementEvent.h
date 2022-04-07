@@ -5,22 +5,22 @@
 
 class MovementEvent : public Event {
     private:
-        const char* eventId;
+        const char* eventKey;
 
   public: 
-    const char* getEventId(){
-        return eventId;
+    const char* getEventKey(){
+        return eventKey;
     }
 
-    MovementEvent(const char *eventId){
-        this->eventId = eventId;
+    MovementEvent(const char *eventKey){
+        this->eventKey = eventKey;
     }
 
     ~MovementEvent() {
     };
 
     Event* clone() {
-        return new MovementEvent(this->eventId);
+        return new MovementEvent(this->eventKey);
     }
 
 };

@@ -17,10 +17,15 @@ class State{
 
 class StatefulController : public EventListener {
   private:
-    State *currentState;
+    State *currentState = NULL;
   public:
+    StatefulController(State *initialState);
     void receiveEvent(Event *event);
 };
+
+StatefulController::StatefulController(State *initialState){
+  this->currentState = initialState;
+}
 
 
 void StatefulController::receiveEvent(Event *event){
@@ -29,7 +34,8 @@ void StatefulController::receiveEvent(Event *event){
         if (oldState != this->currentState){
             delete(oldState);
         }
-        Serial.printf("StatefulController: event received: %s (proc: %d)\n", event->getEventId(), xPortGetCoreID());
+        Serial.printf("StatefulController: event received: %s (proc: %d)\n", event->getEventKey(), xPortGetCoreID());
+
     }
 
 #endif

@@ -8,7 +8,7 @@
 
 class Event{
   public:
-    virtual const char* getEventId();
+    virtual const char* getEventKey();
     virtual Event* clone();
     virtual ~Event(){}
 };
@@ -28,24 +28,19 @@ class EventListener{
 
 EventListener::EventListener(){
     this->eventQueue = xQueueCreate(5, sizeof(Event*));
-    xTaskCreatePinnedToCore(EventListener::listenerTask,
+    xTaskCreate(EventListener::listenerTask,
                 "EventListener",
                 2 * 1024,
                 (void *) this,
-                1,
-                NULL,
-                1);
+                10,
+                NULL);
 }
 
 void EventListener::listenerTask(void *params){
     EventListener *self = (EventListener *) params;
     Event *event;
     for(;;){
-        if(xQueueReceive(
-            self->eventQueue,
-            &event,
-            portMAX_DELAY) == pdPASS){
-
+        if(xQueueReceive(self->eventQueue, &event, portMAX_DELAY) == pdPASS){
             self->receiveEvent(event);
         }
     }
@@ -53,56 +48,60 @@ void EventListener::listenerTask(void *params){
 
 class ListenerNode{
   private:
-    char* eventKey;
+    const char* eventKeyPrefix;
     EventListener *listener;
-    ListenerNode *next;
+    ListenerNode *next = NULL;
   public:
 
-    ListenerNode(EventListener *listener, ListenerNode *current = NULL) {
-      this->listener = listener;
-      this->next = current;
+    ListenerNode(const char* eventKeyPrefix, EventListener *listener, ListenerNode *current = NULL) {
+        this->eventKeyPrefix = eventKeyPrefix;
+        this->listener = listener;
+        this->next = current;
     }
 
     EventListener* getListener(){
-      return this->listener;
+        return this->listener;
     }
 
     ListenerNode* getNext(){
-      return this->next;
+        return this->next;
     }
+
+    const char* getEventKeyPrefix(){
+        return this->eventKeyPrefix;
+    };
 };
 
 /**
- * @brief Contains the message bus where all events are sent to
+ * @brief Contains the message bus where events are sent to
  * 
  */
 class EventBus{
     private:
         QueueHandle_t queue;
-        ListenerNode *rootListenerList;
+        ListenerNode *rootListenerList = NULL;
         static void dispatcherTask(void *params);
 
     public:
         EventBus(byte queueSize);
-        void addEventListener(EventListener *listener);
+        void addEventListener(const char* eventKeyPrefix, EventListener *listener);
         void removeEventListener(EventListener *listener);
         void dispatchEvent(Event *event);
 };
 
 EventBus::EventBus(byte queueSize){
-    this->queue = xQueueCreate(queueSize, sizeof(Event*));
-    xTaskCreatePinnedToCore(EventBus::dispatcherTask,
+    this->queue = xQueueCreate(queueSize, 4 * sizeof(Event*));
+    xTaskCreate(EventBus::dispatcherTask,
                 "Dispatcher",
-                2 * 1024,
+                5 * 1024,
                 (void *) this,
                 1,
-                NULL,
-                0);
+                NULL);
 };
 
-void EventBus::addEventListener(EventListener *listener){
+void EventBus::addEventListener(const char* eventKeyPrefix, EventListener *listener){
     ListenerNode *current = this->rootListenerList;
-    EventBus::rootListenerList = new ListenerNode(listener, current);
+    EventBus::rootListenerList = new ListenerNode(eventKeyPrefix, listener, current);
 }
 
 void EventBus::removeEventListener(EventListener *listener){
@@ -115,8 +114,8 @@ void EventBus::removeEventListener(EventListener *listener){
 }
 
 void EventBus::dispatchEvent(Event *event){
-    if (xQueueSend(EventBus::queue, (void *) &event, 50 / portTICK_PERIOD_MS) != pdPASS){
-        Serial.println("Queue full!");
+    if (xQueueSend(this->queue, (void *) &event, portMAX_DELAY) != pdPASS){
+        Serial.println("EVENT_BUS: Queue full!");
     }
 }
 
@@ -127,21 +126,25 @@ void EventBus::dispatcherTask(void *params){
         BaseType_t hasMessage = xQueueReceive(
             self->queue,
             &event,
-            (300000 / portTICK_PERIOD_MS));
+            portMAX_DELAY);
         if(hasMessage == pdPASS){
-            Serial.printf("Dispatcher: message received type: %s\n", event->getEventId());
-            ListenerNode *currentListenerNode = self->rootListenerList;
+            ListenerNode *currentListenerNode = self->rootListenerList; 
             while(currentListenerNode != NULL){
-                if (xQueueSend(
-                        currentListenerNode->getListener()->eventQueue,
-                        (void *) &event,
-                        10 / portTICK_PERIOD_MS) != pdPASS){
-                    Serial.println("Listener Queue full!");
+                // Does the event key contain the  listener keyprefix? 
+                if (strncmp(
+                        event->getEventKey(),
+                        currentListenerNode->getEventKeyPrefix(), 
+                        strlen(currentListenerNode->getEventKeyPrefix())) == 0){
+                        if (xQueueSend(
+                                currentListenerNode->getListener()->eventQueue,
+                                (void *) &event,
+                                0) != pdPASS){
+                            Serial.println("EVENT_BUS: Listener Queue full!");
+                        }
                 }
                 
                 currentListenerNode = currentListenerNode->getNext();
             }
-            Serial.println("deleting");
             delete(event);
         }
     }
