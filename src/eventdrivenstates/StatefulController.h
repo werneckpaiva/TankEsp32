@@ -2,12 +2,7 @@
 #define StatefulController_h
 
 #include <Arduino.h>
-#include "eventbus/EventBus.h"
-
-// Driver
-// SatefulController
-// - EventListener
-//   - Task
+#include "eventdrivenstates/EventBus.h"
 
 class State{
     public:
@@ -26,7 +21,6 @@ class StatefulController : public EventListener {
 StatefulController::StatefulController(State *initialState){
   this->currentState = initialState;
 }
-
 
 void StatefulController::receiveEvent(Event *event){
         State *oldState = this->currentState;

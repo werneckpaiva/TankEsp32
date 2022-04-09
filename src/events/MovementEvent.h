@@ -1,11 +1,12 @@
-#ifndef MovementControl_h
-#define MovementControl_h
+#ifndef MovementEvent_h
+#define MovementEvent_h
 
-#include "eventbus/EventBus.h"
+#include "eventdrivenstates/EventBus.h"
 
 class MovementEvent : public Event {
     private:
         const char* eventKey;
+        int speed = 10;
 
   public: 
     const char* getEventKey(){
@@ -21,6 +22,10 @@ class MovementEvent : public Event {
 
     Event* clone() {
         return new MovementEvent(this->eventKey);
+    }
+
+    int getSpeed(){
+        return this->speed;
     }
 
 };

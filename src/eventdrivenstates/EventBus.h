@@ -22,19 +22,26 @@ class EventListener{
     static void listenerTask(void *params);
   public:
     QueueHandle_t eventQueue;
-    EventListener();
+    EventListener(unsigned int memorySize=2, byte eventQueueSize=3);
     virtual void receiveEvent(Event *event){};
 };
 
-EventListener::EventListener(){
-    this->eventQueue = xQueueCreate(5, sizeof(Event*));
+/**
+ * @brief Construct a new Event Listener
+ * 
+ * @param memorySize the memory used by the FreeRTOS Task that will receive messages (kBytes)
+ * @param eventQueueSize Amount of messages that can be stored in the event queue
+ */
+EventListener::EventListener(unsigned int memorySize, byte eventQueueSize){
+    this->eventQueue = xQueueCreate(eventQueueSize, sizeof(Event*));
     xTaskCreate(EventListener::listenerTask,
                 "EventListener",
-                2 * 1024,
+                memorySize * 1024,
                 (void *) this,
                 10,
                 NULL);
 }
+
 
 void EventListener::listenerTask(void *params){
     EventListener *self = (EventListener *) params;
