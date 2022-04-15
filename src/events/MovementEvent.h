@@ -6,9 +6,11 @@
 class MovementEvent : public Event {
     private:
         const char* eventKey;
-        int speed = 10;
 
-  public: 
+  public:
+    static constexpr const char* FORWARD = "movement.forward";
+    static constexpr const char* STOP = "movement.stop";
+
     const char* getEventKey(){
         return eventKey;
     }
@@ -22,10 +24,6 @@ class MovementEvent : public Event {
 
     Event* clone() {
         return new MovementEvent(this->eventKey);
-    }
-
-    int getSpeed(){
-        return this->speed;
     }
 
 };
