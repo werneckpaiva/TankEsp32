@@ -5,9 +5,20 @@
 #include "eventdrivenstates/EventBus.h"
 
 class State{
+    private:
+      EventBus *eventBus;
+
     public:
-        virtual State* transition(Event *event);
-        virtual ~State(){}
+      State(EventBus *eventBus){
+        this->eventBus = eventBus;
+      }
+
+      EventBus* getEventBus(){
+        return this->eventBus;
+      }
+
+      virtual State* transition(Event *event);
+      virtual ~State(){}
 };
 
 class StatefulController : public EventListener {
@@ -28,8 +39,7 @@ void StatefulController::receiveEvent(Event *event){
         if (oldState != this->currentState){
             delete(oldState);
         }
-        Serial.printf("StatefulController: event received: %s (proc: %d)\n", event->getEventKey(), xPortGetCoreID());
-
+        Serial.printf("StatefulController: event received: %s\n", event->toString());
     }
 
 #endif

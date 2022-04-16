@@ -1,50 +1,53 @@
 #include <Arduino.h>
 
-#include "eventdrivenstates/EventBus.h"
-#include "eventdrivenstates/StatefulController.h"
-#include "events/MovementEvent.h"
-#include "states/MovementState.h"
+#include "drivers/RCDriver.h"
+#include "drivers/WheelsMotorDriver.h"
 
-// Pins
+#include "eventdrivenstates/EventBus.h"
+#include "events/MovementEvent.h"
+
+#include "eventdrivenstates/StatefulController.h"
+#include "states/MovementState.h"
+#include "states/RCState.h"
+
+// // Pins
 const byte motor1aPin = 18;
 const byte motor1bPin = 19;
 const byte motor2aPin = 22;
 const byte motor2bPin = 23;
 
-const byte rcSerialPin = 16;
-
 
 EventBus *eventBus;
 StatefulController *movementController;
+StatefulController *rcController;
 WheelsMotorDriver *wheelsMotorDriver;
+RCDriver *rcDriver;
 
-void generateEvents(void *params){
-  bool isMoving = false;
-  Event *event;
+void printStatus(void *params){
   for(;;){
-    if (isMoving){
-      event = new MovementEvent(MovementEvent::FORWARD);
-    } else {
-      event = new MovementEvent(MovementEvent::STOP);
-    }
-    isMoving = !isMoving;
-    eventBus->dispatchEvent(event);
     Serial.printf("\nHeap: %d bytes\n", ESP.getFreeHeap());
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    vTaskDelay(2000 / portTICK_PERIOD_MS);
   }
+
 }
 
 void setup() {
   Serial.begin(115200);
 
+
   eventBus = new EventBus(10);
+
   wheelsMotorDriver = new WheelsMotorDriver(motor1aPin, motor1bPin, motor2aPin, motor2bPin);
-  movementController = new StatefulController(new StoppedState(wheelsMotorDriver));
+  rcDriver = new RCDriver(Serial2);
+
+  movementController = new StatefulController(new StoppedState(eventBus, wheelsMotorDriver));
+  rcController = new StatefulController(new RCMonitoringState(eventBus, rcDriver));
+
   eventBus->addEventListener("movement", movementController);
 
-  xTaskCreate(generateEvents,
-                "generateEvents",
-                10 * 1024,
+  xTaskCreate(printStatus,
+                "printStatus",
+                5 * 1024,
                 NULL,
                 20,
                 NULL);
