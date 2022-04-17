@@ -22,12 +22,7 @@ class MovementEvent : public Event {
         this->eventKey = eventKey;
     }
 
-    ~MovementEvent() {
-    };
-
-    Event* clone() {
-        return new MovementEvent(this->eventKey);
-    }
+    ~MovementEvent() {};
 
 };
 

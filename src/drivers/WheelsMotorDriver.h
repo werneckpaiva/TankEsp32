@@ -13,10 +13,10 @@ class WheelsMotorDriver{
         byte m2aPin;
         byte m2bPin;
 
-        const byte m1aChannel = 0;
-        const byte m1bChannel = 1;
-        const byte m2aChannel = 2;
-        const byte m2bChannel = 3;
+        const byte m1aChannel = 10;
+        const byte m1bChannel = 11;
+        const byte m2aChannel = 12;
+        const byte m2bChannel = 13;
 
     public:
         WheelsMotorDriver(byte m1aPin, byte m1bPin, byte m2aPin, byte m2bPin);
@@ -73,18 +73,18 @@ void WheelsMotorDriver::moveBackward(int horizSpeed, int vertSpeed){
 }
 
 void WheelsMotorDriver::spinRight(int vel){
-    ledcWrite(this->m1aChannel, vel);
-    ledcWrite(this->m1bChannel, 0);
-    ledcWrite(this->m2aChannel, 0);
-    ledcWrite(this->m2bChannel, vel);
+    ledcWrite(this->m1aChannel, 0);
+    ledcWrite(this->m1bChannel, vel);
+    ledcWrite(this->m2aChannel, vel);
+    ledcWrite(this->m2bChannel, 0);  
 }
 
 void WheelsMotorDriver::spinLeft(int vel){
     vel *= -1;
-    ledcWrite(this->m1aChannel, 0);
-    ledcWrite(this->m1bChannel, vel);
-    ledcWrite(this->m2aChannel, vel);
-    ledcWrite(this->m2bChannel, 0);
+    ledcWrite(this->m1aChannel, vel);
+    ledcWrite(this->m1bChannel, 0);
+    ledcWrite(this->m2aChannel, 0);
+    ledcWrite(this->m2bChannel, vel);
 }
 
 void WheelsMotorDriver::stopMoving(){

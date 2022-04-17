@@ -9,7 +9,6 @@
 class Event{
   public:
     virtual const char* getEventKey();
-    virtual Event* clone();
     virtual ~Event(){}
     const char* toString(){
         return this->getEventKey();

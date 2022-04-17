@@ -39,7 +39,7 @@ void StatefulController::receiveEvent(Event *event){
         if (oldState != this->currentState){
             delete(oldState);
         }
-        Serial.printf("StatefulController: event received: %s\n", event->toString());
+        // Serial.printf("StatefulController: event received: %s\n", event->toString());
     }
 
 #endif
