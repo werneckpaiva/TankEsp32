@@ -25,8 +25,6 @@ class ManualControlState : public State {
             this->horizontalAngle = horizontalAngle;
             this->verticalAngle = verticalAngle;
 
-            Serial.printf("horizontalAngle: %3d / verticalAngle: %3d\n", horizontalAngle, verticalAngle);
-
             this->moveGimbal(horizontalAngle, verticalAngle);
         }
         State* transition(Event *event);

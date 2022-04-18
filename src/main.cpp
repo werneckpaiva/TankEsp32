@@ -3,6 +3,7 @@
 #include "drivers/RCDriver.h"
 #include "drivers/WheelsMotorDriver.h"
 #include "drivers/GimbalDriver.h"
+#include "drivers/LightsStripDriver.h"
 
 #include "eventdrivenstates/EventBus.h"
 #include "events/MovementEvent.h"
@@ -11,6 +12,8 @@
 #include "states/MovementState.h"
 #include "states/RCState.h" 
 #include "states/GimbalState.h"
+#include "states/FrontLighstState.h"
+
 
 // Pins
 const byte motor1aPin = 18;
@@ -21,15 +24,20 @@ const byte motor2bPin = 23;
 const byte gimbalHorizontalPin = 25;
 const byte gimbalVerticalPin = 26;
 
+const byte frontLedStripPin = 21;
 
 EventBus *eventBus;
-StatefulController *movementController;
-StatefulController *rcController;
-StatefulController *gimbalController;
 
 WheelsMotorDriver *wheelsMotorDriver;
 RCDriver *rcDriver;
 GimbalDriver *gimbalDriver;
+LightsStripDriver *lightsDriver;
+
+
+StatefulController *movementController;
+StatefulController *rcController;
+StatefulController *gimbalController;
+StatefulController *frontLightsController;
 
 void printStatus(void *params){
   for(;;){
@@ -41,19 +49,23 @@ void printStatus(void *params){
 void setup() {
   Serial.begin(115200);
 
-  eventBus = new EventBus(10);
+  eventBus              = new EventBus(10);
 
-  wheelsMotorDriver = new WheelsMotorDriver(motor1aPin, motor1bPin, motor2aPin, motor2bPin);
-  rcDriver = new RCDriver(Serial2);
-  gimbalDriver = new GimbalDriver(gimbalHorizontalPin, gimbalVerticalPin);
+  wheelsMotorDriver     = new WheelsMotorDriver(motor1aPin, motor1bPin, motor2aPin, motor2bPin);
+  rcDriver              = new RCDriver(Serial2);
+  gimbalDriver          = new GimbalDriver(gimbalHorizontalPin, gimbalVerticalPin);
+  lightsDriver          = new LightsStripDriver(8, frontLedStripPin);
 
-  movementController = new StatefulController(new StoppedState(eventBus, wheelsMotorDriver));
-  rcController = new StatefulController(new RCMonitoringState(eventBus, rcDriver));
-  gimbalController = new StatefulController(new ManualControlState(eventBus, gimbalDriver));
+  movementController    = new StatefulController(new StoppedState(eventBus, wheelsMotorDriver));
+  rcController          = new StatefulController(new RCMonitoringState(eventBus, rcDriver));
+  gimbalController      = new StatefulController(new ManualControlState(eventBus, gimbalDriver));  
+  frontLightsController = new StatefulController(new FrontLightRestingState(eventBus, lightsDriver));
 
   eventBus->addEventListener("movement.", movementController);
   eventBus->addEventListener("gimbal.", gimbalController);
+  eventBus->addEventListener("", frontLightsController);
 
+  // lightsDriver->fullPaint(1, .2);
 
   xTaskCreate(printStatus,
                 "printStatus",

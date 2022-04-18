@@ -6,6 +6,7 @@
 #include "eventdrivenstates/StatefulController.h"
 #include "events/MovementEvent.h"
 #include "events/GimbalEvent.h"
+#include "events/LightEvent.h"
 #include "drivers/RCDriver.h"
 
 class RCMonitoringState : public State {
@@ -20,6 +21,7 @@ class RCMonitoringState : public State {
     static void readRC(void *params);
     void processMovement(int horizontalSpeed, int verticalSpeed);
     void processGimbal(int horizontalAngle, int verticalAngle);
+    void processLight(bool lightsOn);
     ~RCMonitoringState(){}
 };
 
@@ -44,9 +46,12 @@ void RCMonitoringState::readRC(void *params){
         int verticalSpeed = self->rcDriver->readChannel(1, -255, 255, 0);
         self->processMovement(horizontalSpeed, verticalSpeed);
 
-        int verticalAngle = self->rcDriver->readChannel(2, 0, 180, 90);
+        int verticalAngle = self->rcDriver->readChannel(2, 180, 0, 90);
         int horizontalAngle = self->rcDriver->readChannel(3, 180, 0, 90);
         self->processGimbal(horizontalAngle, verticalAngle);
+
+        bool lightsOn = self->rcDriver->redSwitch(4, false);
+        self->processLight(lightsOn);
 
         vTaskDelay(RCMonitoringState::SAMPLING_INTERVAL_MS / portTICK_PERIOD_MS);
     }
@@ -68,6 +73,14 @@ void RCMonitoringState::processMovement(int horizontalSpeed, int verticalSpeed){
 
 void RCMonitoringState::processGimbal(int horizontalAngle, int verticalAngle){
     this->getEventBus()->dispatchEvent(new MoveGimbalEvent(horizontalAngle, verticalAngle));
+}
+
+void RCMonitoringState::processLight(bool lightsOn){
+    if (lightsOn){
+        this->getEventBus()->dispatchEvent(new TurnFrontLightOnEvent());
+    } else {
+        this->getEventBus()->dispatchEvent(new TurnFrontLightOffEvent());
+    }
 }
 
 #endif

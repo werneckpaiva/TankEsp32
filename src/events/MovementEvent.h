@@ -31,12 +31,12 @@ class MovementStopEvent : public MovementEvent {
         MovementStopEvent() : MovementEvent(MovementEvent::STOP){}
 };
 
-class MovementWithSpeed : public MovementEvent {
+class MovementWithSpeedEvent : public MovementEvent {
     private:
         int horizontalSpeed;
         int verticalSpeed;
     public:
-        MovementWithSpeed(const char *eventKey, int horizontalSpeed, int verticalSpeed) : MovementEvent(eventKey){
+        MovementWithSpeedEvent(const char *eventKey, int horizontalSpeed, int verticalSpeed) : MovementEvent(eventKey){
             this->horizontalSpeed = horizontalSpeed;
             this->verticalSpeed = verticalSpeed;
         }
@@ -48,24 +48,24 @@ class MovementWithSpeed : public MovementEvent {
         }
 };
 
-class MovementForwardEvent : public MovementWithSpeed {
+class MovementForwardEvent : public MovementWithSpeedEvent {
     public:
-        MovementForwardEvent(int horizontalSpeed, int verticalSpeed) : MovementWithSpeed(MovementEvent::FORWARD, horizontalSpeed, verticalSpeed){}
+        MovementForwardEvent(int horizontalSpeed, int verticalSpeed) : MovementWithSpeedEvent(MovementEvent::FORWARD, horizontalSpeed, verticalSpeed){}
 };
 
-class MovementBackwardEvent : public MovementWithSpeed {
+class MovementBackwardEvent : public MovementWithSpeedEvent {
     public:
-        MovementBackwardEvent(int horizontalSpeed, int verticalSpeed) : MovementWithSpeed(MovementEvent::BACKWARD, horizontalSpeed, verticalSpeed){}
+        MovementBackwardEvent(int horizontalSpeed, int verticalSpeed) : MovementWithSpeedEvent(MovementEvent::BACKWARD, horizontalSpeed, verticalSpeed){}
 };
 
-class MovementSpinRightEvent : public MovementWithSpeed {
+class MovementSpinRightEvent : public MovementWithSpeedEvent {
     public:
-        MovementSpinRightEvent(int speed) : MovementWithSpeed(MovementEvent::SPIN_RIGHT, speed, 0){}
+        MovementSpinRightEvent(int speed) : MovementWithSpeedEvent(MovementEvent::SPIN_RIGHT, speed, 0){}
 };
 
-class MovementSpinLeftEvent : public MovementWithSpeed {
+class MovementSpinLeftEvent : public MovementWithSpeedEvent {
     public:
-        MovementSpinLeftEvent(int speed) : MovementWithSpeed(MovementEvent::SPIN_LEFT, speed, 0){}
+        MovementSpinLeftEvent(int speed) : MovementWithSpeedEvent(MovementEvent::SPIN_LEFT, speed, 0){}
 };
 
 
