@@ -39,7 +39,7 @@ class FrontLightOffState : public LightState {
 class FrontLightRestingState : public LightState {
     public:
         FrontLightRestingState(EventBus *eventBus, LightsStripDriver *lightsStripDriver) : LightState(eventBus, lightsStripDriver){
-            lightsStripDriver->fullPaint(LightsStripDriver::WHITE, .5);
+            lightsStripDriver->fullPaint(LightsStripDriver::BLUE, .1);
         }
         State* transition(Event *event);
 };
@@ -118,6 +118,8 @@ State*  FrontLightMovingState::transition(Event *event){
     } else if (strcmp(event->getEventKey(), MovementEvent::BACKWARD)==0){
         MovementWithSpeedEvent *movementEvent = (MovementWithSpeedEvent*) event;
         return new FrontLightMovingBackwardState(this->getEventBus(), this->getLightsStripDriver(),  movementEvent->getVerticalSpeed());
+    } else if (strcmp(event->getEventKey(), LightEvent::LIGHT_FRONT_OFF)==0){
+        return new FrontLightOffState(this->getEventBus(), this->getLightsStripDriver());
     }
     return this;
 }
@@ -132,6 +134,8 @@ State*  FrontLightRestingMovingGimbalState::transition(Event *event){
         }  else {
             return new FrontLightRestingState(this->getEventBus(), this->getLightsStripDriver());
         }
+    } else if (strcmp(event->getEventKey(), LightEvent::LIGHT_FRONT_OFF)==0){
+        return new FrontLightOffState(this->getEventBus(), this->getLightsStripDriver());
     }
     return this;
 }
@@ -149,7 +153,7 @@ void FrontLightRestingMovingGimbalState::showLights(int horizontalAngle){
         float brightness_dec = brightness / steps;
         for (int i=7; i >= 0; i--){
             if (brightness > 0){
-                this->getLightsStripDriver()->showPixel(i, LightsStripDriver::PURPLE, brightness);
+                this->getLightsStripDriver()->showPixel(i, LightsStripDriver::BLUE, brightness);
             } else {
                  this->getLightsStripDriver()->showPixel(i, 0, 0, 0, 0.0);
             }
@@ -163,7 +167,7 @@ void FrontLightRestingMovingGimbalState::showLights(int horizontalAngle){
         float brightness_dec = brightness / steps;
         for (int i=0; i <= 7; i++){
             if (brightness > 0){
-                 this->getLightsStripDriver()->showPixel(i, LightsStripDriver::PURPLE, brightness);
+                 this->getLightsStripDriver()->showPixel(i, LightsStripDriver::BLUE, brightness);
             } else {
                  this->getLightsStripDriver()->showPixel(i, 0, 0, 0, 0.0);
             }

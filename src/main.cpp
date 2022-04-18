@@ -59,13 +59,13 @@ void setup() {
   movementController    = new StatefulController(new StoppedState(eventBus, wheelsMotorDriver));
   rcController          = new StatefulController(new RCMonitoringState(eventBus, rcDriver));
   gimbalController      = new StatefulController(new ManualControlState(eventBus, gimbalDriver));  
-  frontLightsController = new StatefulController(new FrontLightRestingState(eventBus, lightsDriver));
+  frontLightsController = new StatefulController(new FrontLightOffState(eventBus, lightsDriver));
 
   eventBus->addEventListener("movement.", movementController);
   eventBus->addEventListener("gimbal.", gimbalController);
   eventBus->addEventListener("", frontLightsController);
 
-  // lightsDriver->fullPaint(1, .2);
+
 
   xTaskCreate(printStatus,
                 "printStatus",
