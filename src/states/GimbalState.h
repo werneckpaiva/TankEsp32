@@ -2,8 +2,7 @@
 #define GimbalState_h
 
 #include <Arduino.h>
-#include "eventdrivenstates/EventBus.h"
-#include "eventdrivenstates/StatefulController.h"
+#include <EventDrivenStates.h>
 #include "events/GimbalEvent.h"
 #include "drivers/GimbalDriver.h"
 

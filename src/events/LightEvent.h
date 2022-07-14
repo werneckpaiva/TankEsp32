@@ -1,7 +1,7 @@
 #ifndef LightEvent_h
 #define LightEvent_h
 
-#include "eventdrivenstates/EventBus.h"
+#include <EventDrivenStates.h>
 
 class LightEvent : public Event{
     private:

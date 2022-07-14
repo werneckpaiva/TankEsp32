@@ -1,7 +1,7 @@
 #ifndef MovementEvent_h
 #define MovementEvent_h
 
-#include "eventdrivenstates/EventBus.h"
+#include <EventDrivenStates.h>
 
 class MovementEvent : public Event {
     private:

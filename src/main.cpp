@@ -5,14 +5,14 @@
 #include "drivers/GimbalDriver.h"
 #include "drivers/LightsStripDriver.h"
 
-#include "eventdrivenstates/EventBus.h"
 #include "events/MovementEvent.h"
 
-#include "eventdrivenstates/StatefulController.h"
 #include "states/MovementState.h"
 #include "states/RCState.h" 
 #include "states/GimbalState.h"
 #include "states/FrontLighstState.h"
+
+#include <EventDrivenStates.h>
 
 
 // Pins
@@ -25,6 +25,9 @@ const byte gimbalHorizontalPin = 25;
 const byte gimbalVerticalPin = 26;
 
 const byte frontLedStripPin = 21;
+
+const byte distanceEchoPin = 35;
+const byte distanceTriggerPin = 32;
 
 EventBus *eventBus;
 

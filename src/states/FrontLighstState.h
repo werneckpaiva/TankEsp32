@@ -2,7 +2,6 @@
 #define FrontLightsState_h
 
 #include <Arduino.h>
-#include "eventdrivenstates/StatefulController.h"
 #include "drivers/LightsStripDriver.h"
 #include "events/LightEvent.h"
 

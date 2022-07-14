@@ -1,7 +1,7 @@
 #ifndef GimbalEvent_h
 #define GimbalEvent_h
 
-#include "eventdrivenstates/EventBus.h"
+#include <EventDrivenStates.h>
 
 class MoveGimbalEvent : public Event {
     private:

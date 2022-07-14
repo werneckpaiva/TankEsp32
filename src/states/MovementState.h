@@ -2,10 +2,9 @@
 #define MovementState_h
 
 #include <Arduino.h>
-#include "eventdrivenstates/EventBus.h"
+#include <EventDrivenStates.h>
 #include "events/MovementEvent.h"
 #include "drivers/WheelsMotorDriver.h"
-#include "eventdrivenstates/StatefulController.h"
 
 class MovementState : public State {
   private:
