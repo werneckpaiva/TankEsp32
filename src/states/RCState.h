@@ -47,21 +47,18 @@ State* RCMonitoringState::transition(Event *event){
 
 void RCMonitoringState::readRC(void *params){
     RCMonitoringState *self = (RCMonitoringState*) params;
-     for(;;){
+    for(;;){
         int ch0 = self->rcDriver->readChannel(0, -255, 255, 0);
         int ch1 = self->rcDriver->readChannel(1, -255, 255, 0);
         int ch2 = self->rcDriver->readChannel(2, 180, 0, 90);
         int ch3 = self->rcDriver->readChannel(3, 180, 0, 90);
         bool ch4 = self->rcDriver->redSwitch(4, false);
-
         self->processChannels(ch0, ch1, ch2, ch3, ch4);
-
         vTaskDelay(RCMonitoringState::SAMPLING_INTERVAL_MS / portTICK_PERIOD_MS);
     }
 }
 
 void RCMonitoringState::processChannels(int ch0, int ch1, int ch2, int ch3, bool ch4){
-    Serial.println(ch4);
     if (ch0 != this->ch0 || ch1 != this->ch1){
         this->ch0 = ch0;
         this->ch1 = ch1;

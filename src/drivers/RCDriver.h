@@ -5,7 +5,7 @@
 #include <IBusBM.h>
 
 class RCDriver{
-    private:;
+    private:
         IBusBM ibusRc;
     public:
         RCDriver(HardwareSerial &ibusRcSerial);
@@ -22,7 +22,7 @@ RCDriver::RCDriver(HardwareSerial &ibusRcSerial){
 // If the channel is off, return the default value
 int RCDriver::readChannel(byte channelInput, int minLimit, int maxLimit, int defaultValue) {
   uint16_t ch = this->ibusRc.readChannel(channelInput);
-  Serial.printf("ch-%d: %d\n", channelInput, ch);
+  // Serial.printf("ch-%d: %d\n", channelInput, ch);
   if (ch < 100 or ch > 2500) return defaultValue;
   return map(ch, 1000, 2000, minLimit, maxLimit);
 }
