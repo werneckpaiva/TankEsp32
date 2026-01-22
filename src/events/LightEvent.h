@@ -14,21 +14,24 @@ class LightEvent : public Event{
             this->eventKey = eventKey;
         }
 
-        const char* getEventKey(){
+        virtual const char* getEventKey(){
             return this->eventKey;
         }
 
-        ~LightEvent() {}
+        virtual ~LightEvent() {}
+        virtual Event* clone() const = 0;
 };
 
 class TurnFrontLightOnEvent : public LightEvent {
   public:
     TurnFrontLightOnEvent() : LightEvent(LightEvent::LIGHT_FRONT_ON){}
+    Event* clone() const override { return new TurnFrontLightOnEvent(*this); }
 };
 
 class TurnFrontLightOffEvent : public LightEvent {
   public:
     TurnFrontLightOffEvent() : LightEvent(LightEvent::LIGHT_FRONT_OFF){}
+    Event* clone() const override { return new TurnFrontLightOffEvent(*this); }
 };
 
 #endif

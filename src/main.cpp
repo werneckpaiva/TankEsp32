@@ -24,7 +24,7 @@ const byte motor2bPin = 23;
 const byte gimbalHorizontalPin = 25;
 const byte gimbalVerticalPin = 26;
 
-const byte frontLedStripPin = 21;
+const byte frontLedStripPin = 27;
 
 const byte distanceEchoPin = 35;
 const byte distanceTriggerPin = 32;
@@ -44,7 +44,7 @@ StatefulController *frontLightsController;
 
 void printStatus(void *params){
   for(;;){
-    Serial.printf("\nHeap: %d bytes\n", ESP.getFreeHeap());
+    Serial.printf("Heap: %d bytes, Max Alloc: %d bytes, Min Free: %d bytes\n", ESP.getFreeHeap(), ESP.getMaxAllocHeap(), ESP.getMinFreeHeap());
     vTaskDelay(2000 / portTICK_PERIOD_MS);
   }
 }
@@ -54,22 +54,22 @@ void setup() {
 
   eventBus              = new EventBus(10);
 
-  wheelsMotorDriver     = new WheelsMotorDriver(motor1aPin, motor1bPin, motor2aPin, motor2bPin);
+  // wheelsMotorDriver     = new WheelsMotorDriver(motor1aPin, motor1bPin, motor2aPin, motor2bPin);
   rcDriver              = new RCDriver(Serial2);
-  // gimbalDriver          = new GimbalDriver(gimbalHorizontalPin, gimbalVerticalPin);
+  // // gimbalDriver          = new GimbalDriver(gimbalHorizontalPin, gimbalVerticalPin);
   lightsDriver          = new LightsStripDriver(8, frontLedStripPin);
 
-  movementController    = new StatefulController(new StoppedState(eventBus, wheelsMotorDriver));
+  // movementController    = new StatefulController(new StoppedState(eventBus, wheelsMotorDriver));
   rcController          = new StatefulController(new RCMonitoringState(eventBus, rcDriver));
-  // gimbalController      = new StatefulController(new ManualControlState(eventBus, gimbalDriver));  
+  // // gimbalController      = new StatefulController(new ManualControlState(eventBus, gimbalDriver));  
   frontLightsController = new StatefulController(new FrontLightOffState(eventBus, lightsDriver));
 
-  eventBus->addEventListener("movement.", movementController);
-  // eventBus->addEventListener("gimbal.", gimbalController);
+  // eventBus->addEventListener("movement.", movementController);
+  eventBus->addEventListener("gimbal.", gimbalController);
   eventBus->addEventListener("", frontLightsController);
 
 
-
+  Serial.println("Setup done");
   xTaskCreate(printStatus,
                 "printStatus",
                 5 * 1024,
