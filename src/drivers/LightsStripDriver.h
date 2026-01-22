@@ -88,12 +88,9 @@ void LightsStripDriver::paint(const byte *color, byte posInit, byte posEnd, floa
 }
 
 void LightsStripDriver::fullPaint(const byte *color, float brightness) {
-  Serial.println("LightsStripDriver: fullPaint");
-  Serial.printf("Color: R=%d G=%d B=%d Brightness=%.2f\n", color[0], color[1], color[2], brightness);
   this->pixels->clear();
   this->paint(color, 0, 7, brightness);
   this->pixels->show();
-  Serial.println("LightsStripDriver: fullPaint done");
 }
 
 void LightsStripDriver::clear() {

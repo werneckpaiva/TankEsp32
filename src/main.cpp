@@ -65,7 +65,7 @@ void setup() {
   frontLightsController = new StatefulController(new FrontLightOffState(eventBus, lightsDriver));
 
   // eventBus->addEventListener("movement.", movementController);
-  eventBus->addEventListener("gimbal.", gimbalController);
+  // eventBus->addEventListener("gimbal.", gimbalController);
   eventBus->addEventListener("", frontLightsController);
 
 

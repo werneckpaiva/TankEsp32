@@ -57,17 +57,12 @@ public:
 
 class FrontLightMovingForwardState : public FrontLightMovingState {
 public:
-  FrontLightMovingForwardState(EventBus *eventBus, LightsStripDriver *lightsStripDriver, int speed) : FrontLightMovingState(eventBus, lightsStripDriver, speed, LightsStripDriver::GREEN()) {
-
-  }
+  FrontLightMovingForwardState(EventBus *eventBus, LightsStripDriver *lightsStripDriver, int speed) : FrontLightMovingState(eventBus, lightsStripDriver, speed, LightsStripDriver::GREEN()) {}
 };
 
 class FrontLightMovingBackwardState : public FrontLightMovingState {
 public:
-  FrontLightMovingBackwardState(EventBus *eventBus,
-                                LightsStripDriver *lightsStripDriver, int speed)
-      : FrontLightMovingState(eventBus, lightsStripDriver, speed,
-                              LightsStripDriver::RED()) {}
+  FrontLightMovingBackwardState(EventBus *eventBus, LightsStripDriver *lightsStripDriver, int speed) : FrontLightMovingState(eventBus, lightsStripDriver, speed, LightsStripDriver::RED()) {}
 };
 
 class FrontLightRestingMovingGimbalState : public LightState {
@@ -80,10 +75,7 @@ public:
   static constexpr const float NUM_PIXELS_ON = 8;
   static constexpr const float NUM_ALWAYS_PIXELS_ON = 2;
   static constexpr const float MAX_BRIGHTNESS = .5;
-  FrontLightRestingMovingGimbalState(EventBus *eventBus,
-                                     LightsStripDriver *lightsStripDriver,
-                                     int horizontalAngle)
-      : LightState(eventBus, lightsStripDriver) {
+  FrontLightRestingMovingGimbalState(EventBus *eventBus, LightsStripDriver *lightsStripDriver, int horizontalAngle) : LightState(eventBus, lightsStripDriver) {
     this->horizontalAngle = horizontalAngle;
     this->showLights(horizontalAngle);
   }
@@ -105,43 +97,30 @@ State *FrontLightOffState::transition(Event *event) {
 State *FrontLightRestingState::transition(Event *event) {
   if (strcmp(event->getEventKey(), MovementEvent::FORWARD) == 0) {
     MovementWithSpeedEvent *movementEvent = (MovementWithSpeedEvent *)event;
-    return new FrontLightMovingForwardState(this->getEventBus(),
-                                            this->getLightsStripDriver(),
-                                            movementEvent->getVerticalSpeed());
+    return new FrontLightMovingForwardState(this->getEventBus(), this->getLightsStripDriver(), movementEvent->getVerticalSpeed());
   } else if (strcmp(event->getEventKey(), MovementEvent::BACKWARD) == 0) {
     MovementWithSpeedEvent *movementEvent = (MovementWithSpeedEvent *)event;
-    return new FrontLightMovingBackwardState(this->getEventBus(),
-                                             this->getLightsStripDriver(),
-                                             movementEvent->getVerticalSpeed());
+    return new FrontLightMovingBackwardState(this->getEventBus(), this->getLightsStripDriver(), movementEvent->getVerticalSpeed());
   } else if (strcmp(event->getEventKey(), MoveGimbalEvent::MOVE_GIMBAL) == 0) {
     MoveGimbalEvent *gimbalEvent = (MoveGimbalEvent *)event;
-    return new FrontLightRestingMovingGimbalState(
-        this->getEventBus(), this->getLightsStripDriver(),
-        gimbalEvent->getHorizontalAngle());
+    return new FrontLightRestingMovingGimbalState(this->getEventBus(), this->getLightsStripDriver(), gimbalEvent->getHorizontalAngle());
   } else if (strcmp(event->getEventKey(), LightEvent::LIGHT_FRONT_OFF) == 0) {
-    return new FrontLightOffState(this->getEventBus(),
-                                  this->getLightsStripDriver());
+    return new FrontLightOffState(this->getEventBus(), this->getLightsStripDriver());
   }
   return this;
 }
 
 State *FrontLightMovingState::transition(Event *event) {
   if (strcmp(event->getEventKey(), MovementEvent::STOP) == 0) {
-    return new FrontLightRestingState(this->getEventBus(),
-                                      this->getLightsStripDriver());
+    return new FrontLightRestingState(this->getEventBus(), this->getLightsStripDriver());
   } else if (strcmp(event->getEventKey(), MovementEvent::FORWARD) == 0) {
     MovementWithSpeedEvent *movementEvent = (MovementWithSpeedEvent *)event;
-    return new FrontLightMovingForwardState(this->getEventBus(),
-                                            this->getLightsStripDriver(),
-                                            movementEvent->getVerticalSpeed());
+    return new FrontLightMovingForwardState(this->getEventBus(), this->getLightsStripDriver(), movementEvent->getVerticalSpeed());
   } else if (strcmp(event->getEventKey(), MovementEvent::BACKWARD) == 0) {
     MovementWithSpeedEvent *movementEvent = (MovementWithSpeedEvent *)event;
-    return new FrontLightMovingBackwardState(this->getEventBus(),
-                                             this->getLightsStripDriver(),
-                                             movementEvent->getVerticalSpeed());
+    return new FrontLightMovingBackwardState(this->getEventBus(), this->getLightsStripDriver(), movementEvent->getVerticalSpeed());
   } else if (strcmp(event->getEventKey(), LightEvent::LIGHT_FRONT_OFF) == 0) {
-    return new FrontLightOffState(this->getEventBus(),
-                                  this->getLightsStripDriver());
+    return new FrontLightOffState(this->getEventBus(), this->getLightsStripDriver());
   }
   return this;
 }
@@ -149,21 +128,15 @@ State *FrontLightMovingState::transition(Event *event) {
 State *FrontLightRestingMovingGimbalState::transition(Event *event) {
   if (strcmp(event->getEventKey(), MoveGimbalEvent::MOVE_GIMBAL) == 0) {
     MoveGimbalEvent *movementEvent = (MoveGimbalEvent *)event;
-    if (movementEvent->getHorizontalAngle() < 80 ||
-        movementEvent->getHorizontalAngle() > 100) {
-      if (abs(this->horizontalAngle - movementEvent->getHorizontalAngle()) >
-          5) {
-        return new FrontLightRestingMovingGimbalState(
-            this->getEventBus(), this->getLightsStripDriver(),
-            movementEvent->getHorizontalAngle());
+    if (movementEvent->getHorizontalAngle() < 80 || movementEvent->getHorizontalAngle() > 100) {
+      if (abs(this->horizontalAngle - movementEvent->getHorizontalAngle()) > 5) {
+        return new FrontLightRestingMovingGimbalState(this->getEventBus(), this->getLightsStripDriver(), movementEvent->getHorizontalAngle());
       }
     } else {
-      return new FrontLightRestingState(this->getEventBus(),
-                                        this->getLightsStripDriver());
+      return new FrontLightRestingState(this->getEventBus(), this->getLightsStripDriver());
     }
   } else if (strcmp(event->getEventKey(), LightEvent::LIGHT_FRONT_OFF) == 0) {
-    return new FrontLightOffState(this->getEventBus(),
-                                  this->getLightsStripDriver());
+    return new FrontLightOffState(this->getEventBus(), this->getLightsStripDriver());
   }
   return this;
 }
@@ -176,14 +149,12 @@ State *FrontLightRestingMovingGimbalState::transition(Event *event) {
 void FrontLightRestingMovingGimbalState::showLights(int horizontalAngle) {
   if (horizontalAngle <= LEFT_LIGHT_ANGLE) {
     float percAngle = (horizontalAngle / LEFT_LIGHT_ANGLE);
-    int steps = (NUM_ALWAYS_PIXELS_ON +
-                 ((NUM_PIXELS_ON - NUM_ALWAYS_PIXELS_ON) * percAngle));
+    int steps = (NUM_ALWAYS_PIXELS_ON + ((NUM_PIXELS_ON - NUM_ALWAYS_PIXELS_ON) * percAngle));
     float brightness = MAX_BRIGHTNESS;
     float brightness_dec = brightness / steps;
     for (int i = 7; i >= 0; i--) {
       if (brightness > 0) {
-        this->getLightsStripDriver()->showPixel(i, LightsStripDriver::BLUE(),
-                                                brightness);
+        this->getLightsStripDriver()->showPixel(i, LightsStripDriver::BLUE(), brightness);
       } else {
         this->getLightsStripDriver()->showPixel(i, 0, 0, 0, 0.0);
       }
@@ -191,17 +162,13 @@ void FrontLightRestingMovingGimbalState::showLights(int horizontalAngle) {
     }
     this->getLightsStripDriver()->show();
   } else if (horizontalAngle >= RIGHT_LIGHT_ANGLE) {
-    float percAngle =
-        1.0 -
-        (((horizontalAngle - RIGHT_LIGHT_ANGLE) / (180 - RIGHT_LIGHT_ANGLE)));
-    int steps = (NUM_ALWAYS_PIXELS_ON +
-                 ((NUM_PIXELS_ON - NUM_ALWAYS_PIXELS_ON) * percAngle));
+    float percAngle = 1.0 - (((horizontalAngle - RIGHT_LIGHT_ANGLE) / (180 - RIGHT_LIGHT_ANGLE)));
+    int steps = (NUM_ALWAYS_PIXELS_ON + ((NUM_PIXELS_ON - NUM_ALWAYS_PIXELS_ON) * percAngle));
     float brightness = MAX_BRIGHTNESS;
     float brightness_dec = brightness / steps;
     for (int i = 0; i <= 7; i++) {
       if (brightness > 0) {
-        this->getLightsStripDriver()->showPixel(i, LightsStripDriver::BLUE(),
-                                                brightness);
+        this->getLightsStripDriver()->showPixel(i, LightsStripDriver::BLUE(), brightness);
       } else {
         this->getLightsStripDriver()->showPixel(i, 0, 0, 0, 0.0);
       }
