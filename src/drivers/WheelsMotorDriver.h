@@ -3,6 +3,11 @@
 
 #include <Arduino.h>
 
+/*
+ * Drives the two tracks through an H-bridge: motor 1 is the left track and
+ * motor 2 the right one. Each motor has an A and a B input; PWM on B drives
+ * it forward, PWM on A backward. Speeds are PWM duties 0..255.
+ */
 class WheelsMotorDriver{
     private:
         const byte PWM_RESOLUTION = 8; // bits
@@ -20,12 +25,15 @@ class WheelsMotorDriver{
 
     public:
         WheelsMotorDriver(byte m1aPin, byte m1bPin, byte m2aPin, byte m2bPin);
+        // vertSpeed > 0; horizSpeed < 0 slows the left track, > 0 the right one
         void moveForward(int horizSpeed, int vertSpeed);
+        // vertSpeed < 0; horizSpeed steers as in moveForward
         void moveBackward(int horizSpeed, int vertSpeed);
+        // vel > 0
         void spinRight(int vel);
+        // vel < 0 (the stick value): it is negated before use
         void spinLeft(int vel);
         void stopMoving();
-        void turn(int vertVel, int horizVel);
 };
 
 WheelsMotorDriver::WheelsMotorDriver(byte m1aPin, byte m1bPin, byte m2aPin, byte m2bPin){
