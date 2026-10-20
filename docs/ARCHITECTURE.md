@@ -16,10 +16,8 @@ flowchart LR
 
     subgraph SOURCE[Event source]
         RCD[RCDriver]
-        RCS["RCMonitoringState<br/>readRC task, every 50 ms"]
-        RCC[rcController<br/>StatefulController]
+        RCS["rcMonitor: RCMonitoringState<br/>readRC task, every 50 ms"]
         RX --> RCD --> RCS
-        RCC -. holds .- RCS
     end
 
     subgraph BUS[EventBus]
@@ -247,13 +245,6 @@ stateDiagram-v2
 
 ### RC monitor ([`RCState.h`](../src/states/RCState.h))
 
-```mermaid
-stateDiagram-v2
-    [*] --> RCMonitoring
-    RCMonitoring --> RCMonitoring : any event (ignored)
-    note right of RCMonitoring
-        Its constructor starts the readRC task.
-        Never leave this state: the task still
-        uses the object after it is deleted.
-    end note
-```
+`RCMonitoringState` is not wrapped in a `StatefulController` and is not registered on the bus: it only produces events. Its constructor starts the `readRC` task, which reads the receiver and calls `dispatchEvent` directly. It lives for the whole run and must never be deleted, because the task keeps using it.
+
+Driving modes, such as the planned autonomous driving, should be a state machine in their own controller that reacts to events. They don't belong in the RC monitor.

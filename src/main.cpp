@@ -37,17 +37,19 @@ GimbalDriver *gimbalDriver;
 LightsStripDriver *lightsDriver;
 
 
+// Event source only: its readRC task publishes RC input to the bus
+RCMonitoringState *rcMonitor;
+
 StatefulController *movementController;
-StatefulController *rcController;
 StatefulController *gimbalController;
 StatefulController *frontLightsController;
 
 void printStatus(void *params){
   for(;;){
     Serial.printf("Heap: %d bytes, Max Alloc: %d bytes, Min Free: %d bytes\n", ESP.getFreeHeap(), ESP.getMaxAllocHeap(), ESP.getMinFreeHeap());
-    Serial.printf("Listener min free stack: movement %u, rc %u, gimbal %u, lights %u bytes\n",
-                  movementController->getStackHighWaterMark(), rcController->getStackHighWaterMark(),
-                  gimbalController->getStackHighWaterMark(), frontLightsController->getStackHighWaterMark());
+    Serial.printf("Listener min free stack: movement %u, gimbal %u, lights %u bytes\n",
+                  movementController->getStackHighWaterMark(), gimbalController->getStackHighWaterMark(),
+                  frontLightsController->getStackHighWaterMark());
     vTaskDelay(2000 / portTICK_PERIOD_MS);
   }
 }
@@ -63,7 +65,7 @@ void setup() {
   lightsDriver          = new LightsStripDriver(8, frontLedStripPin);
 
   movementController    = new StatefulController(new StoppedState(eventBus, wheelsMotorDriver));
-  rcController          = new StatefulController(new RCMonitoringState(eventBus, rcDriver));
+  rcMonitor             = new RCMonitoringState(eventBus, rcDriver);
   gimbalController      = new StatefulController(new ManualControlState(eventBus, gimbalDriver));  
   frontLightsController = new StatefulController(new FrontLightOffState(eventBus, lightsDriver));
 

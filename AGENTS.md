@@ -52,7 +52,7 @@ Mermaid diagrams of the event flow, event lifecycle, classes and every state mac
   - Return a `new` state to move to it. The controller deletes the old state.
 - **Entry actions live in state constructors**. For example, `StoppedState` calls `stopMoving()` and `FrontLightRestingState` paints the strip blue. Building a state therefore drives the hardware.
 - Transitions compare keys with `strcmp` against the `static constexpr` key constants in `src/events/`, then cast the event to the concrete type. If you add a new event type, give it a unique key under the right prefix.
-- `RCMonitoringState` is a **source**, not a reactor. Its constructor starts a `readRC` task that polls the receiver every 50 ms and dispatches events only when values change (no retransmission: RC input is continuous, so dropping an occasional event is preferred). Its `transition()` always returns `this`. Never transition away from it: that would delete an object the running task still uses.
+- `RCMonitoringState` is a **source**, not a reactor. Its constructor starts a `readRC` task that polls the receiver every 50 ms and dispatches events only when values change (no retransmission: RC input is continuous, so dropping an occasional event is preferred). It is created directly in `main.cpp` (`rcMonitor`), not wrapped in a `StatefulController` and not registered on the bus, because it never consumes events. Never delete it: its task keeps using the object. Future driving modes (e.g. autonomous driving) belong in their own controller, not in the RC monitor.
 - `EventBus` guards its listener list with a mutex (`listenersMutex`): the dispatcher task walks it while `addEventListener` / `removeEventListener` may run from other tasks. Never call those two from inside the dispatcher. `removeEventListener` unlinks every prefix of a listener but does not delete the listener.
 
 ### Adding a subsystem
@@ -64,7 +64,7 @@ Mermaid diagrams of the event flow, event lifecycle, classes and every state mac
 
 ## Current wiring (`src/main.cpp`)
 
-All four controllers are active: RC monitor, movement (`"movement."`), gimbal (`"gimbal."`) and front lights. The front-lights controller is registered with prefix `""` because it reacts to movement, gimbal and light events.
+The RC monitor (`rcMonitor`, an event source) and three controllers are active: movement (`"movement."`), gimbal (`"gimbal."`) and front lights. The front-lights controller is registered with prefix `""` because it reacts to movement, gimbal and light events.
 
 | Function | GPIO |
 |---|---|
