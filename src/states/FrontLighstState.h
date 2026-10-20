@@ -88,7 +88,7 @@ public:
 State *FrontLightOffState::transition(Event *event) {
   if (strcmp(event->getEventKey(), LightEvent::LIGHT_FRONT_ON) == 0) {
     State* newState = new FrontLightRestingState(this->getEventBus(), this->getLightsStripDriver());
-    Serial.printf("New state address: %p\n", newState);
+    DEBUG_PRINTF("New state address: %p\n", newState);
     return newState;
   }
   return this;

@@ -6,6 +6,19 @@
 #include "freertos/queue.h"
 #include "freertos/semphr.h"
 
+/**
+ * Debug output, compiled in only when DEBUG_MODE is defined (build_flags in
+ * platformio.ini). When disabled the call and its arguments are removed
+ * entirely, so arguments are not evaluated.
+ */
+#ifdef DEBUG_MODE
+#define DEBUG_PRINTF(...) Serial.printf(__VA_ARGS__)
+#define DEBUG_PRINTLN(msg) Serial.println(msg)
+#else
+#define DEBUG_PRINTF(...) do {} while (0)
+#define DEBUG_PRINTLN(msg) do {} while (0)
+#endif
+
 
 
 /**

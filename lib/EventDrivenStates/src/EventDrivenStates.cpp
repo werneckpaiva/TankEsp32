@@ -73,7 +73,7 @@ void EventBus::removeEventListener(EventListener *listener) {
 
 void EventBus::dispatchEvent(Event *event) {
   if (xQueueSend(this->queue, (void *)&event, portMAX_DELAY) != pdPASS) {
-    Serial.println("EVENT_BUS: Queue full!");
+    DEBUG_PRINTLN("EVENT_BUS: Queue full!");
   }
 }
 
@@ -93,7 +93,7 @@ void EventBus::dispatcherTask(void *params) {
           Event *clonedEvent = event->clone();
           if (xQueueSend(currentListenerNode->getListener()->eventQueue,
                          (void *)&clonedEvent, 0) != pdPASS) {
-            Serial.println("EVENT_BUS: Listener Queue full!");
+            DEBUG_PRINTLN("EVENT_BUS: Listener Queue full!");
             delete clonedEvent; // Prevent leak if queue full
           }
         }
@@ -111,7 +111,7 @@ StatefulController::StatefulController(State *initialState) {
 }
 
 void StatefulController::receiveEvent(Event *event) {
-  Serial.printf("StatefulController: event received: %s\n", event->toString());
+  DEBUG_PRINTF("StatefulController: event received: %s\n", event->toString());
   State *oldState = this->currentState;
   this->currentState = this->currentState->transition(event);
   if (oldState != this->currentState) {

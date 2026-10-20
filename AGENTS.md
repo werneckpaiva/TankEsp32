@@ -35,7 +35,6 @@ src/main.cpp             Pin map, object wiring, and listener registration (setu
 src/drivers/             Hardware wrappers (motors, servos/gimbal, NeoPixel strip, RC receiver, distance sensor)
 src/events/              Concrete Event subclasses and their key constants
 src/states/              State subclasses: one state machine per subsystem
-src/debug.h              Unfinished stub that does not compile. It is not included anywhere, so leave it out.
 ```
 
 Headers under `src/` are **header-only and contain non-inline definitions**. Include them only from `main.cpp` (one translation unit). If you add a second `.cpp` that includes them, you get multiple-definition link errors. If you need another `.cpp`, split the header into `.h`/`.cpp` first.
@@ -79,9 +78,10 @@ RC channels: ch0 = turn (-255..255), ch1 = throttle (-255..255), ch2 / ch3 = gim
 
 ## Conventions and gotchas
 
+- **Debug output:** never call `Serial.print*` directly. Use `DEBUG_PRINTF(...)` / `DEBUG_PRINTLN(msg)` (defined in `EventDrivenStates.h`). They compile to nothing, arguments included, unless `DEBUG_MODE` is defined. It is set in `platformio.ini` (`build_flags = -D DEBUG_MODE`) and applies to `src/` and `lib/`. Code that exists only for debugging, such as the `printStatus` task, goes inside `#ifdef DEBUG_MODE`.
 - Code style: 2- or 4-space indentation (it varies by file), `this->` everywhere, explicit getters, `#ifndef X_h` include guards, and `// STATES ###` / `// Transitions ###` section banners in state headers. Match the file you are editing.
 - `src/states/FrontLighstState.h` has a typo in its filename (`Lighst`). Keep the existing name unless the user asks you to rename it.
 - `FrontLighstState.h` uses `MovementEvent` and `MoveGimbalEvent` but doesn't include their headers. It compiles only because `main.cpp` includes those headers first. Keep that include order, or add the includes.
 - Several `FrontLightsState`, `StoppedState` and `MovementState` paths have small bugs. For example, `StoppedState` passes its uninitialized members to the base constructor. Fix only what the task calls for, and mention any others you notice.
-- Memory is tight and everything is heap-allocated. Every listener costs a task (3 KB stack by default) plus a queue (3 events by default). If a listener queue is full, the dispatcher drops the event for that listener immediately. The deepest listener path is `Serial.printf` (newlib `_svfprintf_r` alone uses 784 bytes), so keep formatted logging, especially `%f`, out of listeners or raise their stack. `printStatus` in `main.cpp` logs heap usage and each listener's minimum free stack every 2 s.
+- Memory is tight and everything is heap-allocated. Every listener costs a task (3 KB stack by default) plus a queue (3 events by default). If a listener queue is full, the dispatcher drops the event for that listener immediately. The deepest listener path is `Serial.printf` (newlib `_svfprintf_r` alone uses 784 bytes), so keep formatted logging, especially `%f`, out of listeners or raise their stack. In debug builds, `printStatus` in `main.cpp` logs heap usage and each listener's minimum free stack every 2 s.
 - Arduino libraries come from `lib_deps` (IBusBM, ESP32Servo, Adafruit NeoPixel). Don't vendor them, and don't edit anything under `.pio/`.

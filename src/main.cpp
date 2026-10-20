@@ -44,15 +44,18 @@ StatefulController *movementController;
 StatefulController *gimbalController;
 StatefulController *frontLightsController;
 
+#ifdef DEBUG_MODE
+// Only exists in debug builds: periodically logs heap and listener stack usage
 void printStatus(void *params){
   for(;;){
-    Serial.printf("Heap: %d bytes, Max Alloc: %d bytes, Min Free: %d bytes\n", ESP.getFreeHeap(), ESP.getMaxAllocHeap(), ESP.getMinFreeHeap());
-    Serial.printf("Listener min free stack: movement %u, gimbal %u, lights %u bytes\n",
+    DEBUG_PRINTF("Heap: %d bytes, Max Alloc: %d bytes, Min Free: %d bytes\n", ESP.getFreeHeap(), ESP.getMaxAllocHeap(), ESP.getMinFreeHeap());
+    DEBUG_PRINTF("Listener min free stack: movement %u, gimbal %u, lights %u bytes\n",
                   movementController->getStackHighWaterMark(), gimbalController->getStackHighWaterMark(),
                   frontLightsController->getStackHighWaterMark());
     vTaskDelay(2000 / portTICK_PERIOD_MS);
   }
 }
+#endif
 
 void setup() {
   Serial.begin(115200);
@@ -74,13 +77,15 @@ void setup() {
   eventBus->addEventListener("", frontLightsController);
 
 
-  Serial.println("Setup done");
+  DEBUG_PRINTLN("Setup done");
+#ifdef DEBUG_MODE
   xTaskCreate(printStatus,
                 "printStatus",
                 5 * 1024,
                 NULL,
                 20,
                 NULL);
+#endif
 
 }
 
