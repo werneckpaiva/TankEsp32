@@ -17,7 +17,7 @@
  */
 class Event {
 public:
-  virtual const char *getEventKey();
+  virtual const char *getEventKey() = 0;
   virtual ~Event() {}
   virtual Event* clone() const = 0;
   virtual const char *toString() { return this->getEventKey(); }
@@ -101,7 +101,7 @@ public:
 
   EventBus *getEventBus() { return this->eventBus; }
 
-  virtual State *transition(Event *event);
+  virtual State *transition(Event *event) = 0;
   virtual ~State() {}
 };
 
