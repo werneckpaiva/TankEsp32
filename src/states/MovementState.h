@@ -84,19 +84,19 @@ class SpinningLeftState : public MovementState {
 // Transitions  #################################
 
 State* StoppedState::transition(Event *event){
-  if (strcmp(event->getEventKey(), MovementEvent::FORWARD)==0){
+  if (event->is(MovementEvent::FORWARD)){
     MovementForwardEvent *movementEvent = (MovementForwardEvent*) event;
     return new MoveForwardState(this->getEventBus(), this->getWheelsMotorDriver(), movementEvent->getHorizontalSpeed(), movementEvent->getVerticalSpeed());
 
-  } else if (strcmp(event->getEventKey(), MovementEvent::BACKWARD)==0){
+  } else if (event->is(MovementEvent::BACKWARD)){
     MovementBackwardEvent *movementEvent = (MovementBackwardEvent*) event;
     return new MoveBackwardState(this->getEventBus(), this->getWheelsMotorDriver(), movementEvent->getHorizontalSpeed(), movementEvent->getVerticalSpeed());
 
-  } else if (strcmp(event->getEventKey(), MovementEvent::SPIN_RIGHT)==0){
+  } else if (event->is(MovementEvent::SPIN_RIGHT)){
     MovementSpinRightEvent *movementEvent = (MovementSpinRightEvent*) event;
     return new SpinningRightState(this->getEventBus(), this->getWheelsMotorDriver(), movementEvent->getHorizontalSpeed());
 
-  } else if (strcmp(event->getEventKey(), MovementEvent::SPIN_LEFT)==0){
+  } else if (event->is(MovementEvent::SPIN_LEFT)){
     MovementSpinLeftEvent *movementEvent = (MovementSpinLeftEvent*) event;
     return new SpinningLeftState(this->getEventBus(), this->getWheelsMotorDriver(), movementEvent->getHorizontalSpeed());
   }
@@ -104,11 +104,11 @@ State* StoppedState::transition(Event *event){
 }
 
 State* MoveForwardState::transition(Event *event){
-  if (strcmp(event->getEventKey(), MovementEvent::STOP)==0 ||
-      strcmp(event->getEventKey(), MovementEvent::BACKWARD)==0){
+  if (event->is(MovementEvent::STOP) ||
+      event->is(MovementEvent::BACKWARD)){
     return new StoppedState(this->getEventBus(), this->getWheelsMotorDriver());
 
-  } else if (strcmp(event->getEventKey(), MovementEvent::FORWARD)==0){
+  } else if (event->is(MovementEvent::FORWARD)){
     MovementForwardEvent *movementEvent = (MovementForwardEvent*) event;
     return new MoveForwardState(this->getEventBus(), this->getWheelsMotorDriver(), movementEvent->getHorizontalSpeed(), movementEvent->getVerticalSpeed());
   }
@@ -116,11 +116,11 @@ State* MoveForwardState::transition(Event *event){
 }
 
 State* MoveBackwardState::transition(Event *event){
-  if (strcmp(event->getEventKey(), MovementEvent::STOP)==0 ||
-      strcmp(event->getEventKey(), MovementEvent::FORWARD)==0){
+  if (event->is(MovementEvent::STOP) ||
+      event->is(MovementEvent::FORWARD)){
     return new StoppedState(this->getEventBus(), this->getWheelsMotorDriver());
   
-  } else if (strcmp(event->getEventKey(), MovementEvent::BACKWARD)==0){
+  } else if (event->is(MovementEvent::BACKWARD)){
     MovementBackwardEvent *movementEvent = (MovementBackwardEvent*) event;
     return new MoveBackwardState(this->getEventBus(), this->getWheelsMotorDriver(), movementEvent->getHorizontalSpeed(), movementEvent->getVerticalSpeed());
   }
@@ -128,13 +128,13 @@ State* MoveBackwardState::transition(Event *event){
 }
 
 State* SpinningRightState::transition(Event *event){
-  if (strcmp(event->getEventKey(), MovementEvent::STOP) == 0 ||
-      strcmp(event->getEventKey(), MovementEvent::SPIN_LEFT) == 0 ||
-      strcmp(event->getEventKey(), MovementEvent::FORWARD) == 0 ||
-      strcmp(event->getEventKey(), MovementEvent::BACKWARD) == 0){
+  if (event->is(MovementEvent::STOP) ||
+      event->is(MovementEvent::SPIN_LEFT) ||
+      event->is(MovementEvent::FORWARD) ||
+      event->is(MovementEvent::BACKWARD)){
     return new StoppedState(this->getEventBus(), this->getWheelsMotorDriver());
 
-  } else if (strcmp(event->getEventKey(), MovementEvent::SPIN_RIGHT)==0){
+  } else if (event->is(MovementEvent::SPIN_RIGHT)){
     MovementSpinRightEvent *movementEvent = (MovementSpinRightEvent*) event;
     return new SpinningRightState(this->getEventBus(), this->getWheelsMotorDriver(), movementEvent->getHorizontalSpeed());
   }
@@ -142,12 +142,12 @@ State* SpinningRightState::transition(Event *event){
 }
 
 State* SpinningLeftState::transition(Event *event){
-  if (strcmp(event->getEventKey(), MovementEvent::STOP)==0 ||
-      strcmp(event->getEventKey(), MovementEvent::SPIN_RIGHT) == 0 ||
-      strcmp(event->getEventKey(), MovementEvent::FORWARD) == 0 ||
-      strcmp(event->getEventKey(), MovementEvent::BACKWARD) == 0){
+  if (event->is(MovementEvent::STOP) ||
+      event->is(MovementEvent::SPIN_RIGHT) ||
+      event->is(MovementEvent::FORWARD) ||
+      event->is(MovementEvent::BACKWARD)){
     return new StoppedState(this->getEventBus(), this->getWheelsMotorDriver());
-  } else if (strcmp(event->getEventKey(), MovementEvent::SPIN_LEFT)==0){
+  } else if (event->is(MovementEvent::SPIN_LEFT)){
     MovementSpinLeftEvent *spinEvent = (MovementSpinLeftEvent*) event;    
     if (abs(spinEvent->getHorizontalSpeed() - this->getHorizontalSpeed()) > 5){
       return new SpinningLeftState(this->getEventBus(), this->getWheelsMotorDriver(), spinEvent->getHorizontalSpeed());

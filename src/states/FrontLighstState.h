@@ -86,7 +86,7 @@ public:
 // Transitions  #################################
 
 State *FrontLightOffState::transition(Event *event) {
-  if (strcmp(event->getEventKey(), LightEvent::LIGHT_FRONT_ON) == 0) {
+  if (event->is(LightEvent::LIGHT_FRONT_ON)) {
     State* newState = new FrontLightRestingState(this->getEventBus(), this->getLightsStripDriver());
     DEBUG_PRINTF("New state address: %p\n", newState);
     return newState;
@@ -95,38 +95,38 @@ State *FrontLightOffState::transition(Event *event) {
 }
 
 State *FrontLightRestingState::transition(Event *event) {
-  if (strcmp(event->getEventKey(), MovementEvent::FORWARD) == 0) {
+  if (event->is(MovementEvent::FORWARD)) {
     MovementWithSpeedEvent *movementEvent = (MovementWithSpeedEvent *)event;
     return new FrontLightMovingForwardState(this->getEventBus(), this->getLightsStripDriver(), movementEvent->getVerticalSpeed());
-  } else if (strcmp(event->getEventKey(), MovementEvent::BACKWARD) == 0) {
+  } else if (event->is(MovementEvent::BACKWARD)) {
     MovementWithSpeedEvent *movementEvent = (MovementWithSpeedEvent *)event;
     return new FrontLightMovingBackwardState(this->getEventBus(), this->getLightsStripDriver(), movementEvent->getVerticalSpeed());
-  } else if (strcmp(event->getEventKey(), MoveGimbalEvent::MOVE_GIMBAL) == 0) {
+  } else if (event->is(MoveGimbalEvent::MOVE_GIMBAL)) {
     MoveGimbalEvent *gimbalEvent = (MoveGimbalEvent *)event;
     return new FrontLightRestingMovingGimbalState(this->getEventBus(), this->getLightsStripDriver(), gimbalEvent->getHorizontalAngle());
-  } else if (strcmp(event->getEventKey(), LightEvent::LIGHT_FRONT_OFF) == 0) {
+  } else if (event->is(LightEvent::LIGHT_FRONT_OFF)) {
     return new FrontLightOffState(this->getEventBus(), this->getLightsStripDriver());
   }
   return this;
 }
 
 State *FrontLightMovingState::transition(Event *event) {
-  if (strcmp(event->getEventKey(), MovementEvent::STOP) == 0) {
+  if (event->is(MovementEvent::STOP)) {
     return new FrontLightRestingState(this->getEventBus(), this->getLightsStripDriver());
-  } else if (strcmp(event->getEventKey(), MovementEvent::FORWARD) == 0) {
+  } else if (event->is(MovementEvent::FORWARD)) {
     MovementWithSpeedEvent *movementEvent = (MovementWithSpeedEvent *)event;
     return new FrontLightMovingForwardState(this->getEventBus(), this->getLightsStripDriver(), movementEvent->getVerticalSpeed());
-  } else if (strcmp(event->getEventKey(), MovementEvent::BACKWARD) == 0) {
+  } else if (event->is(MovementEvent::BACKWARD)) {
     MovementWithSpeedEvent *movementEvent = (MovementWithSpeedEvent *)event;
     return new FrontLightMovingBackwardState(this->getEventBus(), this->getLightsStripDriver(), movementEvent->getVerticalSpeed());
-  } else if (strcmp(event->getEventKey(), LightEvent::LIGHT_FRONT_OFF) == 0) {
+  } else if (event->is(LightEvent::LIGHT_FRONT_OFF)) {
     return new FrontLightOffState(this->getEventBus(), this->getLightsStripDriver());
   }
   return this;
 }
 
 State *FrontLightRestingMovingGimbalState::transition(Event *event) {
-  if (strcmp(event->getEventKey(), MoveGimbalEvent::MOVE_GIMBAL) == 0) {
+  if (event->is(MoveGimbalEvent::MOVE_GIMBAL)) {
     MoveGimbalEvent *movementEvent = (MoveGimbalEvent *)event;
     if (movementEvent->getHorizontalAngle() < 80 || movementEvent->getHorizontalAngle() > 100) {
       if (abs(this->horizontalAngle - movementEvent->getHorizontalAngle()) > 5) {
@@ -135,7 +135,7 @@ State *FrontLightRestingMovingGimbalState::transition(Event *event) {
     } else {
       return new FrontLightRestingState(this->getEventBus(), this->getLightsStripDriver());
     }
-  } else if (strcmp(event->getEventKey(), LightEvent::LIGHT_FRONT_OFF) == 0) {
+  } else if (event->is(LightEvent::LIGHT_FRONT_OFF)) {
     return new FrontLightOffState(this->getEventBus(), this->getLightsStripDriver());
   }
   return this;

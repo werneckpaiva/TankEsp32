@@ -31,7 +31,7 @@ class ManualControlState : public State {
 };
 
 State* ManualControlState::transition(Event *event){
-    if (strcmp(event->getEventKey(), MoveGimbalEvent::MOVE_GIMBAL)==0){
+    if (event->is(MoveGimbalEvent::MOVE_GIMBAL)){
         MoveGimbalEvent *gimbalEvent = (MoveGimbalEvent*) event;
         if (abs(this->horizontalAngle - gimbalEvent->getHorizontalAngle()) > 2
             || abs(this->verticalAngle - gimbalEvent->getVerticalAngle()) > 2){

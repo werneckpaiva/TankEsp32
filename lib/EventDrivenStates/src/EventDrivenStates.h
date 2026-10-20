@@ -34,6 +34,8 @@ public:
   virtual ~Event() {}
   virtual Event* clone() const = 0;
   virtual const char *toString() { return this->getEventKey(); }
+  // True when this event's key is exactly eventKey
+  bool is(const char *eventKey) { return strcmp(this->getEventKey(), eventKey) == 0; }
 };
 
 /**
