@@ -12,7 +12,11 @@ class RCMonitoringState : public State {
   protected:
     RCDriver *rcDriver;
     static const unsigned int SAMPLING_INTERVAL_MS = 50;
+    // Events are sent on change, plus a periodic resend of every channel so
+    // that a dropped event (e.g. movement.stop) is not lost forever.
+    static const unsigned int RESEND_INTERVAL_MS = 500;
     static const int SPEED_THRESHOLD = 10;
+    unsigned long lastResendMs = 0;
 
   public:
     int ch0 = 0;
@@ -59,17 +63,23 @@ void RCMonitoringState::readRC(void *params){
 }
 
 void RCMonitoringState::processChannels(int ch0, int ch1, int ch2, int ch3, bool ch4){
-    if (ch0 != this->ch0 || ch1 != this->ch1){
+    unsigned long now = millis();
+    bool resend = now - this->lastResendMs >= RESEND_INTERVAL_MS;
+    if (resend){
+        this->lastResendMs = now;
+    }
+
+    if (resend || ch0 != this->ch0 || ch1 != this->ch1){
         this->ch0 = ch0;
         this->ch1 = ch1;
         this->processMovement(ch0, ch1);
     }
-    if (ch2 != this->ch2 || ch3 != this->ch3){
+    if (resend || ch2 != this->ch2 || ch3 != this->ch3){
         this->ch2 = ch2;
         this->ch3 = ch3;
         this->processGimbal(ch3, ch2);
     }
-    if (ch4 != this->ch4){
+    if (resend || ch4 != this->ch4){
         this->ch4 = ch4;
         this->processLight(ch4);
     }

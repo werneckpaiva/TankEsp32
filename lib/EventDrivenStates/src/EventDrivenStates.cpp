@@ -71,7 +71,8 @@ void EventBus::dispatcherTask(void *params) {
                     strlen(currentListenerNode->getEventKeyPrefix())) == 0) {
           Event *clonedEvent = event->clone();
           if (xQueueSend(currentListenerNode->getListener()->eventQueue,
-                         (void *)&clonedEvent, 0) != pdPASS) {
+                         (void *)&clonedEvent,
+                         pdMS_TO_TICKS(LISTENER_SEND_TIMEOUT_MS)) != pdPASS) {
             Serial.println("EVENT_BUS: Listener Queue full!");
             delete clonedEvent; // Prevent leak if queue full
           }

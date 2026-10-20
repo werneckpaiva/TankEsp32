@@ -34,7 +34,7 @@ private:
 
 public:
   QueueHandle_t eventQueue;
-  EventListener(unsigned int memorySize = 2, byte eventQueueSize = 3);
+  EventListener(unsigned int memorySize = 2, byte eventQueueSize = 10);
   virtual void receiveEvent(Event *event) {};
 };
 
@@ -70,6 +70,9 @@ public:
  */
 class EventBus {
 private:
+  // How long the dispatcher waits for room in a full listener queue before
+  // dropping the event for that listener.
+  static const unsigned int LISTENER_SEND_TIMEOUT_MS = 50;
   QueueHandle_t queue;
   ListenerNode *rootListenerList = NULL;
   static void dispatcherTask(void *params);
