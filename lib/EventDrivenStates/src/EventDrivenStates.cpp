@@ -32,7 +32,7 @@ void EventListener::listenerTask(void *params) {
 }
 
 EventBus::EventBus(byte queueSize) {
-  this->queue = xQueueCreate(queueSize, 4 * sizeof(Event *));
+  this->queue = xQueueCreate(queueSize, sizeof(Event *));
   xTaskCreate(EventBus::dispatcherTask, "Dispatcher", 5 * 1024, (void *)this, 1, NULL);
 };
 
