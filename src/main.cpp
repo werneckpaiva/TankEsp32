@@ -45,6 +45,9 @@ StatefulController *frontLightsController;
 void printStatus(void *params){
   for(;;){
     Serial.printf("Heap: %d bytes, Max Alloc: %d bytes, Min Free: %d bytes\n", ESP.getFreeHeap(), ESP.getMaxAllocHeap(), ESP.getMinFreeHeap());
+    Serial.printf("Listener min free stack: movement %u, rc %u, gimbal %u, lights %u bytes\n",
+                  movementController->getStackHighWaterMark(), rcController->getStackHighWaterMark(),
+                  gimbalController->getStackHighWaterMark(), frontLightsController->getStackHighWaterMark());
     vTaskDelay(2000 / portTICK_PERIOD_MS);
   }
 }

@@ -16,7 +16,11 @@
 EventListener::EventListener(unsigned int memorySize, byte eventQueueSize) {
   this->eventQueue = xQueueCreate(eventQueueSize, sizeof(Event *));
   xTaskCreate(EventListener::listenerTask, "EventListener", memorySize * 1024,
-              (void *)this, 10, NULL);
+              (void *)this, 10, &this->taskHandle);
+}
+
+unsigned int EventListener::getStackHighWaterMark() {
+  return uxTaskGetStackHighWaterMark(this->taskHandle);
 }
 
 void EventListener::listenerTask(void *params) {

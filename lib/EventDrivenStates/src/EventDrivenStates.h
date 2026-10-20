@@ -32,11 +32,14 @@ public:
 class EventListener {
 private:
   static void listenerTask(void *params);
+  TaskHandle_t taskHandle = NULL;
 
 public:
   QueueHandle_t eventQueue;
-  EventListener(unsigned int memorySize = 2, byte eventQueueSize = 3);
+  EventListener(unsigned int memorySize = 3, byte eventQueueSize = 3);
   virtual void receiveEvent(Event *event) {};
+  // Minimum free stack (bytes) the listener task has had since it started
+  unsigned int getStackHighWaterMark();
 };
 
 /**
