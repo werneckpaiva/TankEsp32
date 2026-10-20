@@ -2,8 +2,11 @@
 #define FrontLightsState_h
 
 #include <Arduino.h>
+#include <EventDrivenStates.h>
 #include "drivers/LightsStripDriver.h"
 #include "events/LightEvent.h"
+#include "events/MovementEvent.h"
+#include "events/GimbalEvent.h"
 
 
 class LightState : public State {

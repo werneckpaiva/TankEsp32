@@ -10,7 +10,7 @@
 #include "states/MovementState.h"
 #include "states/RCState.h" 
 #include "states/GimbalState.h"
-#include "states/FrontLighstState.h"
+#include "states/FrontLightsState.h"
 
 #include <EventDrivenStates.h>
 

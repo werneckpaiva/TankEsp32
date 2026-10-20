@@ -194,7 +194,7 @@ stateDiagram-v2
     SpinningLeft --> Stopped : stop / spin.right / forward / backward
 ```
 
-### Front lights ([`FrontLighstState.h`](../src/states/FrontLighstState.h))
+### Front lights ([`FrontLightsState.h`](../src/states/FrontLightsState.h))
 
 This controller listens to every event (prefix `""`) because it reacts to movement and gimbal events as well as light events. `MovingForward` and `MovingBackward` share the transition logic in `FrontLightMovingState`.
 
