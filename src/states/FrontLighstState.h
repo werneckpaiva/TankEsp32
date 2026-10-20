@@ -103,12 +103,7 @@ State *FrontLightRestingState::transition(Event *event) {
     return new FrontLightMovingBackwardState(this->getEventBus(), this->getLightsStripDriver(), movementEvent->getVerticalSpeed());
   } else if (strcmp(event->getEventKey(), MoveGimbalEvent::MOVE_GIMBAL) == 0) {
     MoveGimbalEvent *gimbalEvent = (MoveGimbalEvent *)event;
-    int horizontalAngle = gimbalEvent->getHorizontalAngle();
-    // Centred gimbal (also sent by the periodic RC resend) keeps the resting lights
-    if (horizontalAngle < FrontLightRestingMovingGimbalState::LEFT_LIGHT_ANGLE ||
-        horizontalAngle > FrontLightRestingMovingGimbalState::RIGHT_LIGHT_ANGLE) {
-      return new FrontLightRestingMovingGimbalState(this->getEventBus(), this->getLightsStripDriver(), horizontalAngle);
-    }
+    return new FrontLightRestingMovingGimbalState(this->getEventBus(), this->getLightsStripDriver(), gimbalEvent->getHorizontalAngle());
   } else if (strcmp(event->getEventKey(), LightEvent::LIGHT_FRONT_OFF) == 0) {
     return new FrontLightOffState(this->getEventBus(), this->getLightsStripDriver());
   }
