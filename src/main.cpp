@@ -54,18 +54,18 @@ void setup() {
 
   eventBus              = new EventBus(10);
 
-  // wheelsMotorDriver     = new WheelsMotorDriver(motor1aPin, motor1bPin, motor2aPin, motor2bPin);
+  wheelsMotorDriver     = new WheelsMotorDriver(motor1aPin, motor1bPin, motor2aPin, motor2bPin);
   rcDriver              = new RCDriver(Serial2);
-  // // gimbalDriver          = new GimbalDriver(gimbalHorizontalPin, gimbalVerticalPin);
+  gimbalDriver          = new GimbalDriver(gimbalHorizontalPin, gimbalVerticalPin);
   lightsDriver          = new LightsStripDriver(8, frontLedStripPin);
 
-  // movementController    = new StatefulController(new StoppedState(eventBus, wheelsMotorDriver));
+  movementController    = new StatefulController(new StoppedState(eventBus, wheelsMotorDriver));
   rcController          = new StatefulController(new RCMonitoringState(eventBus, rcDriver));
-  // // gimbalController      = new StatefulController(new ManualControlState(eventBus, gimbalDriver));  
+  gimbalController      = new StatefulController(new ManualControlState(eventBus, gimbalDriver));  
   frontLightsController = new StatefulController(new FrontLightOffState(eventBus, lightsDriver));
 
-  // eventBus->addEventListener("movement.", movementController);
-  // eventBus->addEventListener("gimbal.", gimbalController);
+  eventBus->addEventListener("movement.", movementController);
+  eventBus->addEventListener("gimbal.", gimbalController);
   eventBus->addEventListener("", frontLightsController);
 
 
