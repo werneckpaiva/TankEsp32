@@ -74,7 +74,7 @@ The RC monitor (`rcMonitor`, an event source) and three controllers are active: 
 | Distance sensor echo / trigger | 35 / 32 (driver declared only, not implemented) |
 | RC iBus receiver | `Serial2` (default RX2 = GPIO16) |
 
-RC channels: ch0 = turn (-255..255), ch1 = throttle (-255..255), ch2 / ch3 = gimbal tilt / pan (0..180, inverted), ch4 = lights switch.
+RC channels (constants in `RCMonitoringState`): `TURN_CHANNEL` 0 (-255..255), `THROTTLE_CHANNEL` 1 (-255..255), `TILT_CHANNEL` 2 and `PAN_CHANNEL` 3 (0..180, inverted), `LIGHTS_SWITCH_CHANNEL` 4.
 
 ## Conventions and gotchas
 

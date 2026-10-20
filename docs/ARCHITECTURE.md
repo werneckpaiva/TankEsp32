@@ -156,13 +156,13 @@ classDiagram
 
 | Key | Class | Payload | Emitted when |
 |---|---|---|---|
-| `movement.forward` | `MovementForwardEvent` | horizontal, vertical speed | ch1 > 10 |
-| `movement.backward` | `MovementBackwardEvent` | horizontal, vertical speed | ch1 < -10 |
-| `movement.spin.right` | `MovementSpinRightEvent` | speed | ch1 in ±10 and ch0 > 10 |
-| `movement.spin.left` | `MovementSpinLeftEvent` | speed | ch1 in ±10 and ch0 < -10 |
+| `movement.forward` | `MovementForwardEvent` | horizontal, vertical speed | throttle > 10 |
+| `movement.backward` | `MovementBackwardEvent` | horizontal, vertical speed | throttle < -10 |
+| `movement.spin.right` | `MovementSpinRightEvent` | speed | throttle in ±10 and turn > 10 |
+| `movement.spin.left` | `MovementSpinLeftEvent` | speed | throttle in ±10 and turn < -10 |
 | `movement.stop` | `MovementStopEvent` | none | both sticks centred |
-| `gimbal.move` | `MoveGimbalEvent` | horizontal, vertical angle | ch2 or ch3 changed |
-| `light.front.on` / `light.front.off` | `TurnFrontLight{On,Off}Event` | none | ch4 switch toggled |
+| `gimbal.move` | `MoveGimbalEvent` | horizontal, vertical angle | tilt or pan changed |
+| `light.front.on` / `light.front.off` | `TurnFrontLight{On,Off}Event` | none | lights switch toggled |
 
 `RCMonitoringState` emits events only when channel values change. RC input is continuous, so an occasional dropped event is accepted: the next change supersedes it.
 

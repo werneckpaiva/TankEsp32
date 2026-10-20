@@ -14,17 +14,29 @@ class RCMonitoringState : public State {
     static const unsigned int SAMPLING_INTERVAL_MS = 50;
     static const int SPEED_THRESHOLD = 10;
 
-  public:
-    int ch0 = 0;
-    int ch1 = 0;
-    int ch2 = 0;
-    int ch3 = 0;
-    bool ch4 = false;
+    // Transmitter channel assignment
+    static const byte TURN_CHANNEL = 0;
+    static const byte THROTTLE_CHANNEL = 1;
+    static const byte TILT_CHANNEL = 2;
+    static const byte PAN_CHANNEL = 3;
+    static const byte LIGHTS_SWITCH_CHANNEL = 4;
 
+    static const int MAX_SPEED = 255;
+    static const int MAX_ANGLE = 180;
+    static const int CENTER_ANGLE = 90;
+
+    // Last values read; events are only dispatched when they change
+    int turnSpeed = 0;
+    int throttleSpeed = 0;
+    int tiltAngle = 0;
+    int panAngle = 0;
+    bool lightsOn = false;
+
+  public:
     RCMonitoringState(EventBus *eventBus, RCDriver* rcDriver);
     State* transition(Event *event);
     static void readRC(void *params);
-    void processChannels(int ch0, int ch1, int ch2, int ch3, bool ch4);
+    void processChannels(int turnSpeed, int throttleSpeed, int tiltAngle, int panAngle, bool lightsOn);
     void processMovement(int horizontalSpeed, int verticalSpeed);
     void processGimbal(int horizontalAngle, int verticalAngle);
     void processLight(bool lightsOn);
@@ -48,30 +60,31 @@ State* RCMonitoringState::transition(Event *event){
 void RCMonitoringState::readRC(void *params){
     RCMonitoringState *self = (RCMonitoringState*) params;
     for(;;){
-        int ch0 = self->rcDriver->readChannel(0, -255, 255, 0);
-        int ch1 = self->rcDriver->readChannel(1, -255, 255, 0);
-        int ch2 = self->rcDriver->readChannel(2, 180, 0, 90);
-        int ch3 = self->rcDriver->readChannel(3, 180, 0, 90);
-        bool ch4 = self->rcDriver->redSwitch(4, false);
-        self->processChannels(ch0, ch1, ch2, ch3, ch4);
+        int turnSpeed = self->rcDriver->readChannel(TURN_CHANNEL, -MAX_SPEED, MAX_SPEED, 0);
+        int throttleSpeed = self->rcDriver->readChannel(THROTTLE_CHANNEL, -MAX_SPEED, MAX_SPEED, 0);
+        // Gimbal channels are mapped inverted: the lowest pulse gives MAX_ANGLE
+        int tiltAngle = self->rcDriver->readChannel(TILT_CHANNEL, MAX_ANGLE, 0, CENTER_ANGLE);
+        int panAngle = self->rcDriver->readChannel(PAN_CHANNEL, MAX_ANGLE, 0, CENTER_ANGLE);
+        bool lightsOn = self->rcDriver->readSwitch(LIGHTS_SWITCH_CHANNEL, false);
+        self->processChannels(turnSpeed, throttleSpeed, tiltAngle, panAngle, lightsOn);
         vTaskDelay(RCMonitoringState::SAMPLING_INTERVAL_MS / portTICK_PERIOD_MS);
     }
 }
 
-void RCMonitoringState::processChannels(int ch0, int ch1, int ch2, int ch3, bool ch4){
-    if (ch0 != this->ch0 || ch1 != this->ch1){
-        this->ch0 = ch0;
-        this->ch1 = ch1;
-        this->processMovement(ch0, ch1);
+void RCMonitoringState::processChannels(int turnSpeed, int throttleSpeed, int tiltAngle, int panAngle, bool lightsOn){
+    if (turnSpeed != this->turnSpeed || throttleSpeed != this->throttleSpeed){
+        this->turnSpeed = turnSpeed;
+        this->throttleSpeed = throttleSpeed;
+        this->processMovement(turnSpeed, throttleSpeed);
     }
-    if (ch2 != this->ch2 || ch3 != this->ch3){
-        this->ch2 = ch2;
-        this->ch3 = ch3;
-        this->processGimbal(ch3, ch2);
+    if (tiltAngle != this->tiltAngle || panAngle != this->panAngle){
+        this->tiltAngle = tiltAngle;
+        this->panAngle = panAngle;
+        this->processGimbal(panAngle, tiltAngle);
     }
-    if (ch4 != this->ch4){
-        this->ch4 = ch4;
-        this->processLight(ch4);
+    if (lightsOn != this->lightsOn){
+        this->lightsOn = lightsOn;
+        this->processLight(lightsOn);
     }
 }
 
