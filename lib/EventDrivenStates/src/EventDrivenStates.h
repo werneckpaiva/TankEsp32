@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "freertos/task.h"
 #include "freertos/queue.h"
+#include "freertos/semphr.h"
 
 
 
@@ -60,6 +61,8 @@ public:
 
   ListenerNode *getNext() { return this->next; }
 
+  void setNext(ListenerNode *next) { this->next = next; }
+
   const char *getEventKeyPrefix() { return this->eventKeyPrefix; };
 };
 
@@ -72,11 +75,15 @@ class EventBus {
 private:
   QueueHandle_t queue;
   ListenerNode *rootListenerList = NULL;
+  // Guards rootListenerList: the dispatcher task walks it while other tasks
+  // may add or remove listeners.
+  SemaphoreHandle_t listenersMutex;
   static void dispatcherTask(void *params);
 
 public:
   EventBus(byte queueSize);
   void addEventListener(const char *eventKeyPrefix, EventListener *listener);
+  // Unregisters every prefix of the listener. The listener itself is not deleted.
   void removeEventListener(EventListener *listener);
   void dispatchEvent(Event *event);
 };

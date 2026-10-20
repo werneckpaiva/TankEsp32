@@ -33,22 +33,38 @@ void EventListener::listenerTask(void *params) {
 
 EventBus::EventBus(byte queueSize) {
   this->queue = xQueueCreate(queueSize, sizeof(Event *));
+  this->listenersMutex = xSemaphoreCreateMutex();
   xTaskCreate(EventBus::dispatcherTask, "Dispatcher", 5 * 1024, (void *)this, 1, NULL);
 };
 
 void EventBus::addEventListener(const char *eventKeyPrefix,
                                 EventListener *listener) {
+  xSemaphoreTake(this->listenersMutex, portMAX_DELAY);
   ListenerNode *current = this->rootListenerList;
   EventBus::rootListenerList =
       new ListenerNode(eventKeyPrefix, listener, current);
+  xSemaphoreGive(this->listenersMutex);
 }
 
 void EventBus::removeEventListener(EventListener *listener) {
+  xSemaphoreTake(this->listenersMutex, portMAX_DELAY);
+  ListenerNode *previous = NULL;
   ListenerNode *current = this->rootListenerList;
   while (current != NULL) {
+    ListenerNode *next = current->getNext();
     if (current->getListener() == listener) {
+      if (previous == NULL) {
+        this->rootListenerList = next;
+      } else {
+        previous->setNext(next);
+      }
+      delete current;
+    } else {
+      previous = current;
     }
+    current = next;
   }
+  xSemaphoreGive(this->listenersMutex);
 }
 
 void EventBus::dispatchEvent(Event *event) {
@@ -63,6 +79,7 @@ void EventBus::dispatcherTask(void *params) {
     Event *event;
     BaseType_t hasMessage = xQueueReceive(self->queue, &event, portMAX_DELAY);
     if (hasMessage == pdPASS) {
+      xSemaphoreTake(self->listenersMutex, portMAX_DELAY);
       ListenerNode *currentListenerNode = self->rootListenerList;
       while (currentListenerNode != NULL) {
         // Does the event key contain the  listener keyprefix?
@@ -79,6 +96,7 @@ void EventBus::dispatcherTask(void *params) {
 
         currentListenerNode = currentListenerNode->getNext();
       }
+      xSemaphoreGive(self->listenersMutex);
       delete (event);
     }
   }
