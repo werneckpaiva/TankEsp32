@@ -35,6 +35,8 @@ class MovementState : public State {
 
 
 // STATES #################################
+// Each constructor drives the motors. Changing direction (forward <-> backward,
+// spin <-> anything else) always goes through StoppedState first.
 
 class StoppedState : public MovementState {
   public:
@@ -73,6 +75,9 @@ class SpinningRightState : public MovementState {
 };
 
 class SpinningLeftState : public MovementState {
+  // Smaller speed changes than this keep spinning at the current speed
+  static const int MIN_SPEED_CHANGE = 5;
+
   public:
     State* transition(Event *event);
     SpinningLeftState(EventBus *eventBus, WheelsMotorDriver* wheelsMotorDriver, int speed) : MovementState(eventBus, wheelsMotorDriver, speed, 0){
@@ -148,15 +153,12 @@ State* SpinningLeftState::transition(Event *event){
       event->is(MovementEvent::BACKWARD)){
     return new StoppedState(this->getEventBus(), this->getWheelsMotorDriver());
   } else if (event->is(MovementEvent::SPIN_LEFT)){
-    MovementSpinLeftEvent *spinEvent = (MovementSpinLeftEvent*) event;    
-    if (abs(spinEvent->getHorizontalSpeed() - this->getHorizontalSpeed()) > 5){
+    MovementSpinLeftEvent *spinEvent = (MovementSpinLeftEvent*) event;
+    if (abs(spinEvent->getHorizontalSpeed() - this->getHorizontalSpeed()) > MIN_SPEED_CHANGE){
       return new SpinningLeftState(this->getEventBus(), this->getWheelsMotorDriver(), spinEvent->getHorizontalSpeed());
     }
   }
   return this;
 }
-
-
-
 
 #endif

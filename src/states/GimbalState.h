@@ -7,8 +7,19 @@
 #include "drivers/GimbalDriver.h"
 
 
+/*
+ * Follows the RC gimbal stick. Its constructor moves the servos.
+ */
 class ManualControlState : public State {
     private:
+        static const int MAX_ANGLE = 180;
+        static const int CENTER_ANGLE = 90;
+        // Requested angles 0..MAX_ANGLE are scaled into this servo range
+        static const int SERVO_MIN_ANGLE = 20;
+        static const int SERVO_MAX_ANGLE = 160;
+        // Smaller angle changes than this keep the servos where they are
+        static const int MIN_ANGLE_CHANGE = 2;
+
         GimbalDriver *gimbalDriver;
         int  horizontalAngle;
         int  verticalAngle;
@@ -19,7 +30,7 @@ class ManualControlState : public State {
         }
 
     public:
-        ManualControlState(EventBus *eventBus, GimbalDriver *gimbalDriver, int horizontalAngle = 90, int verticalAngle = 90) : State(eventBus){
+        ManualControlState(EventBus *eventBus, GimbalDriver *gimbalDriver, int horizontalAngle = CENTER_ANGLE, int verticalAngle = CENTER_ANGLE) : State(eventBus){
             this->gimbalDriver = gimbalDriver;
             this->horizontalAngle = horizontalAngle;
             this->verticalAngle = verticalAngle;
@@ -33,8 +44,8 @@ class ManualControlState : public State {
 State* ManualControlState::transition(Event *event){
     if (event->is(MoveGimbalEvent::MOVE_GIMBAL)){
         MoveGimbalEvent *gimbalEvent = (MoveGimbalEvent*) event;
-        if (abs(this->horizontalAngle - gimbalEvent->getHorizontalAngle()) > 2
-            || abs(this->verticalAngle - gimbalEvent->getVerticalAngle()) > 2){
+        if (abs(this->horizontalAngle - gimbalEvent->getHorizontalAngle()) > MIN_ANGLE_CHANGE
+            || abs(this->verticalAngle - gimbalEvent->getVerticalAngle()) > MIN_ANGLE_CHANGE){
             return new ManualControlState(
                 this->getEventBus(),
                 this->gimbalDriver,
@@ -46,11 +57,10 @@ State* ManualControlState::transition(Event *event){
 }
 
 void ManualControlState::moveGimbal( int horizontalAngle, int verticalAngle){
-    int sanitizedHorizontalAngle = map(horizontalAngle, 0, 180, 20, 160);
-    int sanitizedVerticalAngle = map(verticalAngle, 0, 180, 20, 160);
-    gimbalDriver->pan(sanitizedHorizontalAngle);
-    gimbalDriver->tilt(sanitizedVerticalAngle);
+    int panServoAngle = map(horizontalAngle, 0, MAX_ANGLE, SERVO_MIN_ANGLE, SERVO_MAX_ANGLE);
+    int tiltServoAngle = map(verticalAngle, 0, MAX_ANGLE, SERVO_MIN_ANGLE, SERVO_MAX_ANGLE);
+    gimbalDriver->pan(panServoAngle);
+    gimbalDriver->tilt(tiltServoAngle);
 }
-
 
 #endif
