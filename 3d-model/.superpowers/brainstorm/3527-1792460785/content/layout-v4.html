@@ -1,0 +1,111 @@
+<h2>Board layout corrected from your photo</h2>
+<p class="subtitle">Board upright with USB-C at the bottom, which is your photo turned 90° clockwise. Roughly to scale (1 grid = 10 mm).</p>
+
+<style>
+  .sv { width:100%; max-width:360px; display:block; margin:0 auto; }
+  .sv .plate { fill: rgba(140,140,140,.35); stroke:#888; stroke-width:1.5 }
+  .sv .body  { fill: rgba(120,150,190,.28); stroke:#6b8fbf; stroke-width:1.5 }
+  .sv .head  { fill: rgba(230,180,90,.25); stroke:#d9a441; stroke-width:2 }
+  .sv .eye   { fill: rgba(200,200,200,.5); stroke:#999; stroke-width:1.5 }
+  .sv .brow  { fill: none; stroke:#d9a441; stroke-width:5 }
+  .sv .pcb   { fill: rgba(40,40,40,.35); stroke:#999; stroke-width:1 }
+  .sv .hid   { fill: none; stroke:#999; stroke-width:1; stroke-dasharray:4 3 }
+  .sv .servo { fill: rgba(60,110,200,.25); stroke:#3c6ec8; stroke-width:1.2; stroke-dasharray:4 3 }
+  .sv .sd    { fill: rgba(190,190,200,.8); stroke:#889; stroke-width:1 }
+  .sv .card  { fill: rgba(200,80,80,.25); stroke:#c55; stroke-width:1.2; stroke-dasharray:3 2 }
+  .sv .usb   { fill: rgba(190,190,200,.8); stroke:#889; stroke-width:1 }
+  .sv .btn   { fill: #e8dcc0; stroke:#998; }
+  .sv .lens  { fill:#222; stroke:#777; stroke-width:1.5 }
+  .sv .led   { fill:#fff6c8; stroke:#bba; }
+  .sv .laser { fill: rgba(200,160,60,.6); stroke:#a87 }
+  .sv text   { font: 11px system-ui, sans-serif; fill:#999 }
+  .sv .dim   { stroke:#999; stroke-width:1; marker-start:url(#a4); marker-end:url(#a4) }
+  .sv .grid  { stroke: rgba(150,150,150,.12); stroke-width:1 }
+</style>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <marker id="a4" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,2 L8,5 L0,8 z" fill="#999"/></marker>
+  <pattern id="g4" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0 L0 0 0 30" class="grid" fill="none"/></pattern>
+</defs></svg>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Board alone (front, USB-C down), 4× scale</div>
+    <div class="mockup-body">
+      <svg class="sv" viewBox="-30 -20 200 200" style="max-width:300px">
+        <!-- 1 mm = 4 px ; board 30.4 x 38.4 -->
+        <g transform="scale(4)">
+          <rect class="pcb" x="0" y="0" width="30.4" height="38.4" rx="2.5" stroke-width=".3"/>
+          <g fill="none" stroke="#999" stroke-width=".3">
+            <circle cx="3.2" cy="3.2" r="1.6"/><circle cx="27.2" cy="3.2" r="1.6"/>
+            <circle cx="3.2" cy="35.2" r="1.6"/><circle cx="27.2" cy="35.2" r="1.6"/>
+          </g>
+          <!-- header rows along left/right edges -->
+          <g fill="#aaa">
+            <circle cx="1.3" cy="7.9" r=".6"/><circle cx="1.3" cy="10.4" r=".6"/><circle cx="1.3" cy="12.9" r=".6"/><circle cx="1.3" cy="15.4" r=".6"/><circle cx="1.3" cy="17.9" r=".6"/><circle cx="1.3" cy="20.4" r=".6"/><circle cx="1.3" cy="22.9" r=".6"/><circle cx="1.3" cy="25.4" r=".6"/>
+            <circle cx="29.1" cy="7.9" r=".6"/><circle cx="29.1" cy="10.4" r=".6"/><circle cx="29.1" cy="12.9" r=".6"/><circle cx="29.1" cy="15.4" r=".6"/><circle cx="29.1" cy="17.9" r=".6"/><circle cx="29.1" cy="20.4" r=".6"/><circle cx="29.1" cy="22.9" r=".6"/><circle cx="29.1" cy="25.4" r=".6"/>
+          </g>
+          <rect x="12.3" y="0" width="8.5" height="1.8" fill="#c44"/>
+          <rect class="sd" x="2.7" y="5.8" width="4.8" height="10.6" stroke-width=".3"/>
+          <rect class="card" x="-6" y="5.8" width="8.7" height="10.6" stroke-width=".3"/>
+          <rect class="led" x="8.8" y="6.6" width="1.6" height="2" stroke-width=".2"/>
+          <rect class="led" x="22.5" y="6.6" width="1.6" height="2" stroke-width=".2"/>
+          <rect class="lens" x="11.6" y="5.2" width="9.6" height="9.6" rx="1" stroke-width=".3"/>
+          <circle cx="16.4" cy="10" r="3" fill="#000"/>
+          <rect x="13.5" y="15" width="6" height="7" fill="#c8862a" opacity=".7"/>
+          <rect class="btn" x="6.6" y="31.4" width="3" height="3" stroke-width=".2"/>
+          <rect class="btn" x="21.4" y="31.4" width="3" height="3" stroke-width=".2"/>
+          <rect class="usb" x="11.5" y="31.5" width="9" height="8.5" rx="1.2" stroke-width=".3"/>
+        </g>
+        <text x="-28" y="30" style="fill:#c55">SD</text>
+        <text x="-28" y="43" style="fill:#c55">card</text>
+        <text x="-28" y="56" style="fill:#c55">out?</text>
+        <text x="33" y="173">BOOT</text><text x="88" y="173">RESET</text>
+        <text x="58" y="-6" style="fill:#c44">antenna</text>
+      </svg>
+    </div>
+  </div>
+  <div class="mockup">
+    <div class="mockup-header">Whole gimbal, front view</div>
+    <div class="mockup-body">
+      <svg class="sv" viewBox="0 -40 300 420">
+        <rect width="300" height="350" fill="url(#g4)"/>
+        <rect class="plate" x="87" y="326" width="126" height="13" rx="3"/>
+        <rect class="body" x="96" y="242" width="108" height="84" rx="14"/>
+        <rect class="servo" x="114" y="256" width="72" height="56"/>
+        <text x="118" y="288">pan servo</text>
+        <rect class="body" x="54" y="227" width="216" height="15" rx="6"/>
+        <!-- slim pin arm on the SD side, servo arm on the other -->
+        <rect class="body" x="58" y="142" width="15" height="100" rx="7"/>
+        <rect class="body" x="228" y="100" width="42" height="142" rx="16"/>
+        <rect class="servo" x="232" y="117" width="35" height="70"/>
+        <text x="215" y="200" transform="rotate(-90 250 196)">tilt servo</text>
+        <!-- head -->
+        <path class="head" d="M95,6 H205 Q228,6 228,29 V70 Q228,84 214,90 L208,94 V196 Q208,214 190,214 H110 Q92,214 92,196 V94 L86,90 Q72,84 72,70 V29 Q72,6 95,6 Z"/>
+        <rect class="head" x="128" y="-30" width="44" height="40" rx="10"/>
+        <circle class="laser" cx="150" cy="-12" r="18"/>
+        <circle cx="150" cy="-12" r="4" fill="#e33"/>
+        <circle class="brow" cx="111" cy="45" r="28"/>
+        <circle class="brow" cx="189" cy="45" r="28"/>
+        <circle class="eye" cx="111" cy="45" r="22"/>
+        <circle class="eye" cx="189" cy="45" r="22"/>
+        <!-- board at 3 px/mm, origin (104,88) -->
+        <rect class="hid" x="104" y="88" width="91" height="115"/>
+        <rect class="card" x="78" y="105" width="34" height="32"/>
+        <rect class="sd" x="112" y="105" width="14" height="32"/>
+        <rect class="led" x="130" y="108" width="6" height="6"/>
+        <rect class="led" x="171" y="108" width="6" height="6"/>
+        <rect class="lens" x="139" y="104" width="29" height="29" rx="4"/>
+        <circle cx="153" cy="118" r="8" fill="#000"/>
+        <rect class="btn" x="124" y="182" width="9" height="9"/>
+        <rect class="btn" x="168" y="182" width="9" height="9"/>
+        <rect class="usb" x="138" y="196" width="27" height="18" rx="3"/>
+        <circle cx="65" cy="152" r="5" fill="#d9a441"/>
+        <line class="dim" x1="54" y1="360" x2="270" y2="360"/>
+        <text x="128" y="375">~72 mm</text>
+      </svg>
+    </div>
+  </div>
+</div>
+<p class="subtitle">Top row of the board: SD slot · flash LED · camera (centered) · flash LED, with the antenna on the top edge. RESET/BOOT flank the USB-C at the bottom and stay reachable through pinholes.
+The SD side gets the slim pin arm, which stops at the pivot, and the tilt servo moves to the other arm, so the card slot in that side of the head stays free.</p>

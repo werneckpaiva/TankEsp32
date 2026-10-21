@@ -1,0 +1,15 @@
+# Generated outputs: rebuild with ../gimbal.sh build / 3mf and the guide scripts
+stl/
+3mf/gimbal_head.3mf
+3mf/gimbal_fit_test.3mf
+3mf/result.json
+docs/ASSEMBLY_GUIDE.pdf
+docs/drawings/
+
+# Python caches
+__pycache__/
+.pytest_cache/
+
+# Brainstorm server state (local port, session token)
+.superpowers/brainstorm/.last-*
+.superpowers/brainstorm/*/state/

@@ -1,0 +1,97 @@
+<h2>Board upright, USB-C at the bottom, laser on top</h2>
+<p class="subtitle">Roughly to scale (1 grid = 10 mm). Tilt servo in the left arm (option A). The head now tapers: wide at the eyes, narrower around the upright board.</p>
+
+<style>
+  .sv { width:100%; max-width:360px; display:block; margin:0 auto; }
+  .sv .plate { fill: rgba(140,140,140,.35); stroke:#888; stroke-width:1.5 }
+  .sv .body  { fill: rgba(120,150,190,.28); stroke:#6b8fbf; stroke-width:1.5 }
+  .sv .head  { fill: rgba(230,180,90,.25); stroke:#d9a441; stroke-width:2 }
+  .sv .eye   { fill: rgba(200,200,200,.5); stroke:#999; stroke-width:1.5 }
+  .sv .brow  { fill: none; stroke:#d9a441; stroke-width:5 }
+  .sv .hid   { fill: none; stroke:#999; stroke-width:1; stroke-dasharray:4 3 }
+  .sv .servo { fill: rgba(60,110,200,.25); stroke:#3c6ec8; stroke-width:1.2; stroke-dasharray:4 3 }
+  .sv .sd    { fill: rgba(200,80,80,.25); stroke:#c55; stroke-width:1.2; stroke-dasharray:3 2 }
+  .sv .usb   { fill: rgba(80,160,80,.3); stroke:#4a4; stroke-width:1.2 }
+  .sv .lens  { fill:#333; stroke:#777; stroke-width:2 }
+  .sv .led   { fill:#fff6c8; stroke:#bba; }
+  .sv text   { font: 11px system-ui, sans-serif; fill:#999 }
+  .sv .dim   { stroke:#999; stroke-width:1; marker-start:url(#a2); marker-end:url(#a2) }
+  .sv .grid  { stroke: rgba(150,150,150,.12); stroke-width:1 }
+</style>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <marker id="a2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,2 L8,5 L0,8 z" fill="#999"/></marker>
+  <pattern id="g2" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0 L0 0 0 30" class="grid" fill="none"/></pattern>
+</defs></svg>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Front view</div>
+    <div class="mockup-body">
+      <svg class="sv" viewBox="0 -40 300 420">
+        <rect width="300" height="350" fill="url(#g2)"/>
+        <rect class="plate" x="87" y="326" width="126" height="13" rx="3"/>
+        <rect class="body" x="96" y="242" width="108" height="84" rx="14"/>
+        <rect class="servo" x="114" y="256" width="72" height="56"/>
+        <text x="118" y="288">pan servo</text>
+        <rect class="body" x="30" y="227" width="240" height="15" rx="6"/>
+        <rect class="body" x="30" y="80" width="42" height="162" rx="16"/>
+        <rect class="body" x="228" y="80" width="42" height="162" rx="16"/>
+        <rect class="servo" x="34" y="92" width="35" height="70"/>
+        <text x="22" y="200" transform="rotate(-90 44 196)">tilt servo</text>
+        <!-- tapered head: wide eye section, narrower board section -->
+        <path class="head" d="M95,6 H205 Q228,6 228,29 V70 Q228,84 214,90 L208,94 V196 Q208,214 190,214 H110 Q92,214 92,196 V94 L86,90 Q72,84 72,70 V29 Q72,6 95,6 Z"/>
+        <circle class="brow" cx="111" cy="45" r="28"/>
+        <circle class="brow" cx="189" cy="45" r="28"/>
+        <circle class="eye" cx="111" cy="45" r="22"/>
+        <circle class="eye" cx="189" cy="45" r="22"/>
+        <rect class="head" x="128" y="-30" width="44" height="40" rx="10"/>
+        <circle cx="150" cy="-12" r="18" fill="rgba(200,160,60,.6)" stroke="#a87"/>
+        <circle cx="150" cy="-12" r="4" fill="#e33"/>
+        <!-- upright board 30.4 x 38.4 -->
+        <rect class="hid" x="104" y="88" width="91" height="115"/>
+        <rect class="sd" x="106" y="92" width="36" height="33"/>
+        <text x="108" y="110" style="fill:#c55">SD</text>
+        <rect class="lens" x="137" y="118" width="26" height="26" rx="4"/>
+        <circle cx="150" cy="131" r="7" fill="#111"/>
+        <rect class="led" x="122" y="150" width="8" height="5"/><rect class="led" x="170" y="150" width="8" height="5"/>
+        <rect class="usb" x="136" y="203" width="27" height="10" rx="3"/>
+        <text x="132" y="226" style="fill:#4a4">USB-C</text>
+        <line class="dim" x1="30" y1="360" x2="270" y2="360"/>
+        <text x="128" y="375">~80 mm</text>
+      </svg>
+    </div>
+  </div>
+  <div class="mockup">
+    <div class="mockup-header">Side view (front = right)</div>
+    <div class="mockup-body">
+      <svg class="sv" viewBox="0 -40 320 420">
+        <rect width="320" height="350" fill="url(#g2)"/>
+        <rect class="plate" x="114" y="326" width="92" height="13" rx="3"/>
+        <rect class="body" x="106" y="242" width="108" height="84" rx="14"/>
+        <rect class="body" x="124" y="80" width="72" height="162" rx="30"/>
+        <rect class="head" x="100" y="6" width="120" height="208" rx="22"/>
+        <rect class="brow" x="220" y="25" width="18" height="40" rx="4" style="stroke-width:3"/>
+        <rect class="head" x="120" y="-30" width="100" height="40" rx="10"/>
+        <rect x="118" y="-30" width="108" height="36" rx="4" fill="rgba(200,160,60,.6)" stroke="#a87"/>
+        <text x="140" y="-8">laser SYD1230</text>
+        <line x1="226" y1="-12" x2="318" y2="-12" stroke="#e33" stroke-width="2"/>
+        <rect class="hid" x="203" y="88" width="5" height="115"/>
+        <rect class="lens" x="208" y="118" width="14" height="26" rx="2"/>
+        <rect class="sd" x="196" y="92" width="7" height="33"/>
+        <rect class="hid" x="112" y="88" width="88" height="115"/>
+        <text x="118" y="150">Dupont plugs</text>
+        <text x="118" y="164">&amp; wire bay</text>
+        <circle cx="160" cy="110" r="5" fill="#d9a441"/>
+        <line x1="236" y1="131" x2="318" y2="131" stroke="#4a4" stroke-width="2"/>
+        <text x="250" y="124" style="fill:#4a4">level (rest)</text>
+        <line x1="228" y1="140" x2="292" y2="204" stroke="#c55" stroke-width="2" stroke-dasharray="5 3"/>
+        <text x="246" y="222" style="fill:#c55">-45° down</text>
+        <line x1="222" y1="115" x2="222" y2="2" stroke="#55c" stroke-width="2" stroke-dasharray="5 3"/>
+        <text x="230" y="14" style="fill:#55c">up to ~+90°</text>
+        <text x="8" y="114">tilt pivot →</text>
+      </svg>
+    </div>
+  </div>
+</div>
+<p class="subtitle">The laser (Ø12 × 35 mm) sits in a clamp on top of the head, between and above the eyes, parallel to the camera. It tilts and pans with everything else, so the red dot marks where the camera and distance sensor point. Open question: the SD slot (red) sits in the top corner of the board, but the card's insertion edge decides where the head needs a card slot: the side of the head or the top, under the eyes.</p>

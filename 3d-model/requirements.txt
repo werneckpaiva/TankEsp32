@@ -1,0 +1,7 @@
+# Python dependencies of the gimbal model (installed in the TankEsp32 root .venv):
+#   .venv/bin/python -m pip install -r 3d-model/requirements.txt
+build123d==0.13.0   # modelling; brings OCP, numpy and lib3mf
+ocp-viewer==1.2.0   # the standalone viewer (ocp-viewer) and show()
+pytest==9.1.1       # the geometric tests
+reportlab==5.0.1    # assembly guide PDF
+svglib==2.3.0       # SVG drawings into the guide
